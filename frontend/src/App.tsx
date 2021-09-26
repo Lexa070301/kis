@@ -18,6 +18,7 @@ import {Hotels} from "./components/Hotels/Hotels";
 import {Clients} from "./components/Clients/Clients";
 import {ForAccountant} from "./components/ForAccountant/ForAccountant";
 import {ForAdmin} from "./components/ForAdmin/ForAdmin";
+import {Employees} from "./components/Employees/Employees";
 
 const App = observer(() => {
     useEffect(() => {
@@ -77,6 +78,9 @@ const App = observer(() => {
         </Route>
         <Route path="/agents">
             <Agents/>
+        </Route>
+        <Route path="/employees">
+            <Employees/>
         </Route>
         <Route path="/countries">
             <Countries/>

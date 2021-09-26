@@ -21,6 +21,10 @@ export const usersAPI = {
         return instance.get(`organisations`)
             .then(response => response.data);
     },
+    getEmployees() {
+        return instance.get(`employees`)
+            .then(response => response.data);
+    },
     getAgents() {
         return instance.get(`agents`)
             .then(response => response.data);

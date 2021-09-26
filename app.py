@@ -67,6 +67,19 @@ def agents():
     return response
 
 
+@app.route(default_path + 'employees', methods=['GET'])
+def employees():
+    response = app.response_class(
+        response=query_db('SELECT Name, FullName, DateOfBirth, Email, Organisation.Title AS Office FROM Employee \
+        INNER JOIN Position ON Employee.Position_id = Position.id \
+        INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id;'),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
+
+
 @app.route(default_path + 'auth/login', methods=['POST'])
 def login():
     if request.method == 'POST':

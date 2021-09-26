@@ -11,7 +11,7 @@ export const ForAccountant = () => {
                         items={[
                             {text: "Клиентский договора", link: "/contracts"},
                             {text: "Оплаты", link: "/payments"},
-                            {text: "Клиеты", link: "/clients"},
+                            {text: "Клиенты", link: "/clients"},
                             {text: "Организации", link: "/organizations"},
                         ]}/>
             <ColumnMenu title={"Отчеты"}
