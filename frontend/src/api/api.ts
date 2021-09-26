@@ -41,3 +41,25 @@ export const loginAPI = {
         return instance.post(`check_auth`,{}).then(response => response.data);
     }
 }
+
+export const hotelsAPI = {
+    getCountries() {
+        return instance.get(`countries`)
+            .then(response => response.data);
+    },
+    getCities() {
+        return instance.get(`cities`)
+            .then(response => response.data);
+    },
+    getHotels() {
+        return instance.get(`hotels`)
+            .then(response => response.data);
+    },
+}
+
+export const clientsAPI = {
+    getClients() {
+        return instance.get(`clients`)
+            .then(response => response.data);
+    },
+}

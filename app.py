@@ -112,5 +112,49 @@ def check_auth():
     return response
 
 
+@app.route(default_path + 'countries', methods=['GET'])
+def countries():
+    response = app.response_class(
+        response=query_db('SELECT * FROM Country;'),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route(default_path + 'cities', methods=['GET'])
+def cities():
+    response = app.response_class(
+        response=query_db('SELECT City.Name AS City, Country.Name AS Country FROM City \
+        INNER JOIN Country ON City.Country_id = Country.id;'),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route(default_path + 'hotels', methods=['GET'])
+def hotels():
+    response = app.response_class(
+        response=query_db('SELECT Hotel.Name AS Hotel, Address, City.Name AS City, Country.Name AS Country \
+        FROM Hotel INNER JOIN City ON Hotel.City_id = City.id INNER JOIN Country ON City.Country_id = Country.id;'),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route(default_path + 'clients', methods=['GET'])
+def clients():
+    response = app.response_class(
+        response=query_db('SELECT Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status, Series, Number, \
+        IssuanceDate, EndDate, IssuedAt FROM User INNER JOIN Passport ON User.Passport_id = Passport.id \
+        INNER JOIN Status On User.Status_id = Status.id;'),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
 if __name__ == '__main__':
     app.run()

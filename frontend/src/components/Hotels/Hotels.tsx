@@ -1,40 +1,40 @@
-import classes from "./Agents.module.css";
-import AgentsInstance from "../../store/Agents";
+import classes from "./Hotels.module.css";
 import {observer} from "mobx-react-lite";
 import {toJS} from "mobx";
 import {Title} from "../common/Title/Title";
 import {useEffect} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
+import Hotel from "../../store/Hotels";
 
-export const Agents = observer(() => {
+export const Hotels = observer(() => {
     useEffect(() => {
-        if (!toJS(AgentsInstance.agents)) AgentsInstance.loadAgents();
+        if (!toJS(Hotel.hotels)) Hotel.loadHotels();
     }, []);
 
     const columns = [
         {
-            name: "Имя",
+            name: "Отель",
             options: {
                 filter: false,
                 sort: true
             }
         },
         {
-            name: "Полное имя",
+            name: "Адрес",
             options: {
                 filter: false,
                 sort: true
             }
         },
         {
-            name: "Email",
+            name: "Город",
             options: {
-                filter: false,
+                filter: true,
                 sort: true
             }
         },
         {
-            name: "Офис",
+            name: "Страна",
             options: {
                 filter: true,
                 sort: true
@@ -43,8 +43,8 @@ export const Agents = observer(() => {
     ];
 
 
-    const data = AgentsInstance.agents ?
-        AgentsInstance.agents.map(item => [item.Name, item.FullName, item.Email, item.Office]) : [[""]]
+    const data = Hotel.hotels ?
+        Hotel.hotels.map(item => [item.Hotel, item.Address, item.City, item.Country]) : [[""]]
 
     const options:MUIDataTableOptions = {
         pagination: false,
@@ -54,10 +54,10 @@ export const Agents = observer(() => {
 
     return (
         <div>
-            <Title text={"Агенты"}/>
+            <Title text={"Отели"}/>
             <div className={classes.table}>
                 <MUIDataTable
-                    title={"Список Агентов"}
+                    title={"Список Отелей"}
                     data={data}
                     columns={columns}
                     options={options}

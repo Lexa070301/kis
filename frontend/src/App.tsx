@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import './App.css';
 import {
-    BrowserRouter as Router, NavLink, Redirect,
+    BrowserRouter as Router,
     Route, Switch
 } from "react-router-dom";
 import {AsideMenu} from "./components/AsideMenu/AsideMenu";
@@ -12,6 +12,12 @@ import {Organizations} from "./components/Organizations/Organizations";
 import {Login} from "./components/Login/Login";
 import {form} from "./store/LoginForm";
 import {Agents} from "./components/Agents/Agents";
+import {Countries} from "./components/Countries/Countries";
+import {Cities} from "./components/Cities/Cities";
+import {Hotels} from "./components/Hotels/Hotels";
+import {Clients} from "./components/Clients/Clients";
+import {ForAccountant} from "./components/ForAccountant/ForAccountant";
+import {ForAdmin} from "./components/ForAdmin/ForAdmin";
 
 const App = observer(() => {
     useEffect(() => {
@@ -28,21 +34,62 @@ const App = observer(() => {
         <Route path="/agents">
             <Agents/>
         </Route>
+        <Route path="/countries">
+            <Countries/>
+        </Route>
+        <Route path="/cities">
+            <Cities/>
+        </Route>
+        <Route path="/hotels">
+            <Hotels/>
+        </Route>
+        <Route path="/clients">
+            <Clients/>
+        </Route>
     </>
 
     const accountantRoutes = <>
-        <Route path="/for-accountant"></Route>
+        <Route path="/for-accountant">
+            <ForAccountant/>
+        </Route>
+        <Route path="/organizations">
+            <Organizations/>
+        </Route>
+        <Route path="/clients">
+            <Clients/>
+        </Route>
     </>
     const agentRoutes = <>
         <Route path="/for-agent"></Route>
     </>
     const adminRoutes = <>
-        {managerRoutes}
-        {accountantRoutes}
-        {agentRoutes}
-        <>
-            <Route path="/for-agent"></Route>
-        </>
+        <Route path="/for-admin">
+            <ForAdmin/>
+        </Route>
+        <Route path="/for-manager">
+            <ForManager/>
+        </Route>
+        <Route path="/for-accountant">
+            <ForAccountant/>
+        </Route>
+        <Route path="/organizations">
+            <Organizations/>
+        </Route>
+        <Route path="/agents">
+            <Agents/>
+        </Route>
+        <Route path="/countries">
+            <Countries/>
+        </Route>
+        <Route path="/cities">
+            <Cities/>
+        </Route>
+        <Route path="/hotels">
+            <Hotels/>
+        </Route>
+        <Route path="/clients">
+            <Clients/>
+        </Route>
     </>
     return (
         <Router>

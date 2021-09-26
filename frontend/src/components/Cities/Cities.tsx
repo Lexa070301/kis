@@ -1,40 +1,26 @@
-import classes from "./Agents.module.css";
-import AgentsInstance from "../../store/Agents";
+import classes from "./Cities.module.css";
 import {observer} from "mobx-react-lite";
 import {toJS} from "mobx";
 import {Title} from "../common/Title/Title";
 import {useEffect} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
+import City from "../../store/Cities";
 
-export const Agents = observer(() => {
+export const Cities = observer(() => {
     useEffect(() => {
-        if (!toJS(AgentsInstance.agents)) AgentsInstance.loadAgents();
+        if (!toJS(City.cities)) City.loadCities();
     }, []);
 
     const columns = [
         {
-            name: "Имя",
+            name: "Город",
             options: {
                 filter: false,
                 sort: true
             }
         },
         {
-            name: "Полное имя",
-            options: {
-                filter: false,
-                sort: true
-            }
-        },
-        {
-            name: "Email",
-            options: {
-                filter: false,
-                sort: true
-            }
-        },
-        {
-            name: "Офис",
+            name: "Страна",
             options: {
                 filter: true,
                 sort: true
@@ -43,8 +29,8 @@ export const Agents = observer(() => {
     ];
 
 
-    const data = AgentsInstance.agents ?
-        AgentsInstance.agents.map(item => [item.Name, item.FullName, item.Email, item.Office]) : [[""]]
+    const data = City.cities ?
+        City.cities.map(item => [item.City, item.Country]) : [[""]]
 
     const options:MUIDataTableOptions = {
         pagination: false,
@@ -54,10 +40,10 @@ export const Agents = observer(() => {
 
     return (
         <div>
-            <Title text={"Агенты"}/>
+            <Title text={"Города"}/>
             <div className={classes.table}>
                 <MUIDataTable
-                    title={"Список Агентов"}
+                    title={"Список Городов"}
                     data={data}
                     columns={columns}
                     options={options}

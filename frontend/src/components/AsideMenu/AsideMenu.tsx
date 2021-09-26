@@ -1,12 +1,10 @@
 import classes from "./AsideMenu.module.css";
 import {
-    NavLink, Redirect, Route
+    NavLink
 } from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {UserInstance} from "../../store/User";
 import React from "react";
-import {ForManager} from "../ForManager/ForManager";
-import {Organizations} from "../Organizations/Organizations";
 
 export const AsideMenu = observer(() => {
     const onLeave = () => {

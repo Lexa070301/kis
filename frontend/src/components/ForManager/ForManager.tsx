@@ -12,7 +12,7 @@ export const ForManager = () => {
                             {text: "Предварительное соглашение", link: "/preliminary-agreement"},
                             {text: "Клиентский договора", link: "/contracts"},
                             {text: "Список ваучеров", link: "/vouchers"},
-                            {text: "Клиеты", link: "/users"},
+                            {text: "Клиеты", link: "/clients"},
                         ]}/>
             <ColumnMenu title={"Отчеты"}
                         items={[
