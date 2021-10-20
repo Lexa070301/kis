@@ -1,9 +1,15 @@
+import os
+
 from flask import Flask, request
 from flask_cors import CORS
 from flaskext.mysql import MySQL
 import json
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, verify_jwt_in_request
 from datetime import timedelta
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = './static/images/'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 
@@ -13,12 +19,19 @@ app.config['MYSQL_DATABASE_PASSWORD'] = ';Bmfr9m7.I36'
 app.config['MYSQL_DATABASE_DB'] = 'bhx20166_kis'
 app.config['MYSQL_DATABASE_HOST'] = '91.219.194.19'
 app.config['JWT_SECRET_KEY'] = 'fj234%$@ptj\34j\4390Q%)%ufv=19414_@*231i)(&0r-'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1000
 mysql.init_app(app)
 conn = mysql.connect()
 default_path = '/api/'
 
 jwt = JWTManager(app)
 CORS(app, supports_credentials=True)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def query_db(query, add=[], args=(), one=False):
@@ -67,17 +80,50 @@ def agents():
     return response
 
 
-@app.route(default_path + 'employees', methods=['GET'])
+@app.route(default_path + 'employees', methods=['GET', 'POST', 'PUT'])
 def employees():
-    response = app.response_class(
-        response=query_db('SELECT Name, FullName, DateOfBirth, Email, Organisation.Title AS Office FROM Employee \
-        INNER JOIN Position ON Employee.Position_id = Position.id \
-        INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id;'),
-        status=200,
-        mimetype='application/json'
-    )
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT Name, FullName, DateOfBirth, Email, Organisation.Title AS Office FROM Employee \
+            INNER JOIN Position ON Employee.Position_id = Position.id \
+            INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
-    return response
+    if request.method == 'POST':
+        name = str(request.json["name"])
+        fullname = str(request.json["fullName"])
+        date_of_birth = str(request.json["dateOfBirth"])
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", NULL, "", "", "4", "1");')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+    if request.method == 'PUT':
+        employeeId = str(request.form.to_dict()['id'])
+        file = request.files['image']
+        if file.filename != '':
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'] + "employees",
+                                          "avatar_" + employeeId + "_" + filename)
+                file.save(image_path)
+                cursor = conn.cursor()
+                cursor.execute(
+                    'UPDATE Employee SET PhotoLink = "' + image_path + '" WHERE id = ' + employeeId + ';')
+                cursor.close()
+                conn.commit()
+
+    return request.method
 
 
 @app.route(default_path + 'auth/login', methods=['POST'])
