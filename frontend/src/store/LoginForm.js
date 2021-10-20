@@ -13,13 +13,13 @@ const plugins = {
 const fields = [{
   name: 'email',
   label: 'Email',
-  placeholder: 'Insert Email',
+  placeholder: 'Введите Email',
   rules: 'required|email|string|between:5,25',
   type: 'email'
 }, {
   name: 'password',
-  label: 'Password',
-  placeholder: 'Insert Password',
+  label: 'Пароль',
+  placeholder: 'Введите пароль',
   rules: 'required|string|between:5,25',
   type: 'password'
 }];
@@ -37,7 +37,7 @@ const hooks = {
         }
       })
     } catch (e) {
-      Swal.fire('Ошибка', e, 'error')
+      Swal.fire('Ошибка', String(e), 'error')
     }
   },
   onError() {

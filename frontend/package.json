@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "homepage": "http://perfilyev.std-944.ist.mospolytech.ru/kis",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",

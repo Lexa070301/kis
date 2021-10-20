@@ -5,6 +5,9 @@ import {toJS} from "mobx";
 import {Title} from "../common/Title/Title";
 import {useEffect} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
+import {AddEmployeeForm} from "./AddEmployeeForm";
+import {form} from "../../store/AddEmployeeForm";
+import {usersAPI} from "../../api/api";
 
 export const Employees = observer(() => {
     useEffect(() => {
@@ -62,6 +65,8 @@ export const Employees = observer(() => {
     return (
         <div>
             <Title text={"Сотрудники"}/>
+            <button className={"common-btn " + classes.addEmployee__btn}>Новый сотрудник</button>
+            <AddEmployeeForm form={form}/>
             <div className={classes.table}>
                 <MUIDataTable
                     title={"Список Сотрудников"}

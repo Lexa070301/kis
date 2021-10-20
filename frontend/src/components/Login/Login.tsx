@@ -36,7 +36,7 @@ export const Login = observer(({form}) => (
             </label>
             <input {...form.$('password').bind()} className={"common-input"}/>
             <p className={"common-error"}>{form.$('password').error}</p>
-            <button type="submit" onClick={form.onSubmit} className={"common-btn " + classes.btn}>Submit</button>
+            <button type="submit" onClick={form.onSubmit} className={"common-btn " + classes.btn}>Войти</button>
         </form>
 
     </div>

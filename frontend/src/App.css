@@ -65,6 +65,8 @@
     border: 0;
     cursor: pointer;
     transition: 0.3s ease all;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .common-btn:hover {

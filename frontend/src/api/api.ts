@@ -7,7 +7,7 @@ const instance = axios.create({
     baseURL: baseURL
 });
 
-instance.interceptors.request.use( config => {
+instance.interceptors.request.use(config => {
     config.headers.Authorization = "Bearer " + localStorage.getItem("token");
     return config
 })
@@ -24,6 +24,26 @@ export const usersAPI = {
     getEmployees() {
         return instance.get(`employees`)
             .then(response => response.data);
+    },
+    async addEmployee(name: String, fullName: String, dateOfBirth: Date, photo?: File) {
+        const response1 = await instance.post(`employees`,{
+            name,
+            fullName,
+            dateOfBirth,
+        })
+        if (photo) {
+            const data = new FormData();
+            data.append('image', photo);
+            data.append('id', response1.data[0].lastId);
+            const response2 = await instance.put(`employees`,
+                data,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                })
+        }
+        return response1
     },
     getAgents() {
         return instance.get(`agents`)
@@ -42,7 +62,7 @@ export const loginAPI = {
         }).then(response => response.data);
     },
     checkAuth() {
-        return instance.post(`check_auth`,{}).then(response => response.data);
+        return instance.post(`check_auth`, {}).then(response => response.data);
     }
 }
 
