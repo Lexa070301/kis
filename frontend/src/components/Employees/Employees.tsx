@@ -7,12 +7,21 @@ import {useEffect} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
 import {AddEmployeeForm} from "./AddEmployeeForm";
 import {form} from "../../store/AddEmployeeForm";
-import {usersAPI} from "../../api/api";
+import Org, {OrganisationsType} from "../../store/Organisations";
+import Positions, {PositionType} from "../../store/Positions";
+
 
 export const Employees = observer(() => {
     useEffect(() => {
-        if (!toJS(EmployeesInstance.employees)) EmployeesInstance.loadEmployees();
+        if (!toJS(EmployeesInstance.employees)) EmployeesInstance.loadEmployees().then(() => {
+            if (!toJS(Positions.positions)) Positions.loadPositions().then(() => {
+                if (!toJS(Org.organisations)) Org.loadOrganisations().then()
+            });
+        });
     }, []);
+
+    const organizationList: OrganisationsType = toJS(Org.organisations)
+    const positionsList: PositionType = toJS(Positions.positions)
 
     const columns = [
         {
@@ -44,7 +53,14 @@ export const Employees = observer(() => {
             }
         },
         {
-            name: "Офис",
+            name: "Организация",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "Должность",
             options: {
                 filter: true,
                 sort: true
@@ -52,11 +68,10 @@ export const Employees = observer(() => {
         }
     ];
 
-
     const data = EmployeesInstance.employees ?
-        EmployeesInstance.employees.map(item => [item.Name, item.FullName, item.DateOfBirth, item.Email, item.Office]) : [[""]]
+        EmployeesInstance.employees.map(item => [item.Name, item.FullName, item.DateOfBirth, item.Email, item.Office, item.Position]) : [[""]]
 
-    const options:MUIDataTableOptions = {
+    const options: MUIDataTableOptions = {
         pagination: false,
         selectableRows: "none",
         print: false
@@ -66,7 +81,7 @@ export const Employees = observer(() => {
         <div>
             <Title text={"Сотрудники"}/>
             <button className={"common-btn " + classes.addEmployee__btn}>Новый сотрудник</button>
-            <AddEmployeeForm form={form}/>
+            <AddEmployeeForm form={form} organizationList={organizationList} positionsList={positionsList}/>
             <div className={classes.table}>
                 <MUIDataTable
                     title={"Список Сотрудников"}

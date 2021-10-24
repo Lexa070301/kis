@@ -2,9 +2,8 @@ import dvr from 'mobx-react-form/lib/validators/DVR';
 import validatorjs from 'validatorjs';
 import MobxReactForm from 'mobx-react-form';
 import Swal from 'sweetalert2'
-import {loginAPI, usersAPI} from "../api/api";
+import {usersAPI} from "../api/api";
 import {sha512} from "js-sha512";
-import {UserInstance} from "./User";
 
 const plugins = {
   dvr: dvr(validatorjs),
@@ -33,14 +32,48 @@ const fields = [{
   label: 'Добавьте фотографию',
   rules: '',
   type: 'file'
+}, {
+  name: 'email',
+  label: 'Email',
+  rules: 'required|string|between:5,25',
+  type: 'email'
+}, {
+  name: 'password',
+  label: 'Пароль',
+  rules: 'required|string|between:5,25',
+  type: 'password'
+},{
+  name: "organization",
+  label: "Организация",
+  rules: 'required',
+  placeholder: "Выберите организацию",
+  output: organization => organization && organization.value
+},{
+  name: "position",
+  label: "Должность",
+  rules: 'required',
+  placeholder: "Выберите должность",
+  output: position => position && position.value
 }];
 
 
 const hooks = {
   onSuccess(form) {
+    console.log(form.values().organization)
+    console.log(form.values().position)
     try {
+      const password = sha512(form.values().password + "fn29%$H37y(*&JFd092h3")
       if(form.$('photo').files)
-        usersAPI.addEmployee(form.values().name, form.values().fullName, form.values().dateOfBirth, form.$('photo').files[0]).then(response => {
+        usersAPI.addEmployee(
+            form.values().name,
+            form.values().fullName,
+            form.values().dateOfBirth,
+            form.values().email,
+            password,
+            form.values().organization,
+            form.values().position,
+            form.$('photo').files[0]
+        ).then(response => {
           if (response !== "error") {
             Swal.fire('Success', 'Сотрудник успешно добавлен', 'success')
           } else {
@@ -48,7 +81,15 @@ const hooks = {
           }
         })
       else
-        usersAPI.addEmployee(form.values().name, form.values().fullName, form.values().dateOfBirth).then(response => {
+        usersAPI.addEmployee(
+            form.values().name,
+            form.values().fullName,
+            form.values().dateOfBirth,
+            form.values().email,
+            password,
+            form.values().organization,
+            form.values().position,
+        ).then(response => {
           if (response !== "error") {
             Swal.fire('Success', 'Сотрудник успешно добавлен', 'success')
           } else {

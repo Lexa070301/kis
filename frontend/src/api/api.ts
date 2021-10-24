@@ -1,5 +1,7 @@
 import axios from "axios";
+import EmployeesInstance from "../store/Employees";
 
+// export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
 export const baseURL = "http://127.0.0.1:5000/api/"
 
 const instance = axios.create({
@@ -21,21 +23,38 @@ export const usersAPI = {
         return instance.get(`organisations`)
             .then(response => response.data);
     },
+    getPositions() {
+        return instance.get(`positions`)
+            .then(response => response.data);
+    },
     getEmployees() {
         return instance.get(`employees`)
             .then(response => response.data);
     },
-    async addEmployee(name: String, fullName: String, dateOfBirth: Date, photo?: File) {
-        const response1 = await instance.post(`employees`,{
+    async addEmployee(
+        name: String,
+        fullName: String,
+        dateOfBirth: Date,
+        email: String,
+        password: String,
+        organization: String,
+        position: String,
+        photo?: File
+    ) {
+        const response1 = await instance.post(`employees`, {
             name,
             fullName,
             dateOfBirth,
+            email,
+            password,
+            organization,
+            position
         })
         if (photo) {
             const data = new FormData();
             data.append('image', photo);
             data.append('id', response1.data[0].lastId);
-            const response2 = await instance.put(`employees`,
+            await instance.put(`employees`,
                 data,
                 {
                     headers: {
@@ -43,6 +62,7 @@ export const usersAPI = {
                     }
                 })
         }
+        EmployeesInstance.loadEmployees()
         return response1
     },
     getAgents() {

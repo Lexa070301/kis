@@ -1,13 +1,16 @@
 import {makeAutoObservable} from "mobx";
 import {usersAPI} from "../api/api";
 
-type EmployeesType = Array<{
+export type EmployeeItemType = {
     Name: string
     FullName: string
     DateOfBirth: string
     Email: string
     Office: string
-}> | null
+    Position: string
+}
+
+export type EmployeesType = Array<EmployeeItemType> | null
 
 class Employees {
     employees:EmployeesType = null
@@ -17,7 +20,7 @@ class Employees {
     }
 
     loadEmployees() {
-        usersAPI.getEmployees().then(response => this.employees = response)
+        return usersAPI.getEmployees().then(response => this.employees = response)
     }
 }
 

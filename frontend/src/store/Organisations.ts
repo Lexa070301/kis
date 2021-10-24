@@ -1,10 +1,12 @@
 import {makeAutoObservable} from "mobx";
 import {usersAPI} from "../api/api";
 
-type OrganisationsType = Array<{
+export type OrganisationItemType = {
     id: number
     Title: string
-}> | null
+}
+
+export type OrganisationsType = Array<OrganisationItemType> | null
 
 class Organisations {
     organisations:OrganisationsType = null
@@ -13,8 +15,8 @@ class Organisations {
         makeAutoObservable(this)
     }
 
-    loadOrganisations() {
-        usersAPI.getOrganisations().then(response => this.organisations = response)
+    async loadOrganisations() {
+        return usersAPI.getOrganisations().then(response => this.organisations = response)
     }
 }
 
