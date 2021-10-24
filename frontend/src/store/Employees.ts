@@ -2,6 +2,7 @@ import {makeAutoObservable} from "mobx";
 import {usersAPI} from "../api/api";
 
 export type EmployeeItemType = {
+    id: number
     Name: string
     FullName: string
     DateOfBirth: string

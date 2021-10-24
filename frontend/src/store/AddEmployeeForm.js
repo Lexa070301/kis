@@ -35,7 +35,7 @@ const fields = [{
 }, {
   name: 'email',
   label: 'Email',
-  rules: 'required|string|between:5,25',
+  rules: 'required|string|between:5,25|email',
   type: 'email'
 }, {
   name: 'password',
@@ -59,8 +59,6 @@ const fields = [{
 
 const hooks = {
   onSuccess(form) {
-    console.log(form.values().organization)
-    console.log(form.values().position)
     try {
       const password = sha512(form.values().password + "fn29%$H37y(*&JFd092h3")
       if(form.$('photo').files)

@@ -31,6 +31,28 @@ export const usersAPI = {
         return instance.get(`employees`)
             .then(response => response.data);
     },
+    editEmployee(
+        id: Number,
+        name: String,
+        fullName: String,
+        dateOfBirth: String,
+        email: String,
+        organization: String,
+        position: String,
+    ) {
+        return instance.put(`employee`, {
+            id,
+            name,
+            fullName,
+            dateOfBirth,
+            email,
+            organization,
+            position
+        }).then(response => {
+            EmployeesInstance.loadEmployees()
+            return response.data
+        });
+    },
     async addEmployee(
         name: String,
         fullName: String,

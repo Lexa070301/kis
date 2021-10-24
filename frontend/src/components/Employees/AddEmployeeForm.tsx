@@ -3,31 +3,11 @@ import classes from "./Employees.module.css";
 import React, {useState} from "react";
 import Upload from "../../assets/images/icons/upload.svg"
 import Select from "react-select";
-import {OrganisationItemType} from "../../store/Organisations";
-import {PositionItemType} from "../../store/Positions";
 
 
 // @ts-ignore
-export const AddEmployeeForm = observer(({form, organizationList, positionsList}) => {
+export const AddEmployeeForm = observer(({form, organizations, positions}) => {
         const [selectedImage, setSelectedImage] = useState();
-
-        let organizations = []
-        if (organizationList)
-            organizations = organizationList.map((item: OrganisationItemType) => {
-                return {
-                    value: item.id,
-                    label: item.Title
-                }
-            })
-
-        let positions = []
-        if (positionsList)
-            positions = positionsList.map((item: PositionItemType) => {
-                return {
-                    value: item.id,
-                    label: item.Title
-                }
-            })
 
         const imageChange = (e: any) => {
             if (e.target.files && e.target.files.length > 0) {
@@ -65,7 +45,7 @@ export const AddEmployeeForm = observer(({form, organizationList, positionsList}
                         </label>
                         <input {...form.$('password').bind()} className={"common-input"}/>
                         <p className={"common-error"}>{form.$('password').error}</p>
-                        <label htmlFor={form.$('organization').id} className={"common-label"}>
+                        <label htmlFor={form.$('organization').id} className={"common-label select-label"}>
                             {form.$('organization').label}
                         </label>
                         <Select
@@ -74,7 +54,7 @@ export const AddEmployeeForm = observer(({form, organizationList, positionsList}
                             {...form.$("organization").bind()}
                         />
                         <p className={"common-error"}>{form.$('organization').error}</p>
-                        <label htmlFor={form.$('position').id} className={"common-label"}>
+                        <label htmlFor={form.$('position').id} className={"common-label select-label"}>
                             {form.$('position').label}
                         </label>
                         <Select

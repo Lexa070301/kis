@@ -94,7 +94,7 @@ def agents():
 def employees():
     if request.method == 'GET':
         response = app.response_class(
-            response=query_db('SELECT Name, FullName, DateOfBirth, Email, Organisation.Title AS Office, Position.Title AS Position FROM Employee \
+            response=query_db('SELECT Employee.id, Name, FullName, DateOfBirth, Email, Organisation.Title AS Office, Position.Title AS Position FROM Employee \
             INNER JOIN Position ON Employee.Position_id = Position.id \
             INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id;'),
             status=200,
@@ -110,8 +110,6 @@ def employees():
         organization = str(request.json["organization"])
         position = str(request.json["position"])
         date_of_birth = str(request.json["dateOfBirth"])
-        print(organization)
-        print(position)
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", NULL, "' + email + '", "' + password + '", "' + position + '", "' + organization + '");')
@@ -141,6 +139,28 @@ def employees():
 
     return request.method
 
+
+@app.route(default_path + 'employee', methods=['PUT'])
+def employee():
+    if request.method == 'PUT':
+        id = str(request.json["id"])
+        name = str(request.json["name"])
+        fullname = str(request.json["fullName"])
+        email = str(request.json["email"])
+        organization = str(request.json["organization"])
+        position = str(request.json["position"])
+        date_of_birth = str(request.json["dateOfBirth"])
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE Employee SET Name = "' + name + '", FullName = "' + fullname + '", DateOfBirth = "' + date_of_birth + '", Email = "' + email + '", Position_id = "' + position + '", Organisation_id = "' + organization + '" WHERE id = "' + id + '";')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
 @app.route(default_path + 'auth/login', methods=['POST'])
 def login():

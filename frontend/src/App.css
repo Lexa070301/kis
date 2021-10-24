@@ -1,5 +1,5 @@
 .container {
-    max-width: 1440px;
+    max-width: 1550px;
     width: 95%;
     margin: 0px auto;
 }
@@ -71,4 +71,8 @@
 
 .common-btn:hover {
     background: linear-gradient(45deg, var(--accent) 0%, var(--accent) 100%);
+}
+
+div[class$="control"][class^=" css"] {
+    height: 45px!important;
 }
