@@ -140,7 +140,7 @@ def employees():
     return request.method
 
 
-@app.route(default_path + 'employee', methods=['PUT'])
+@app.route(default_path + 'employee', methods=['PUT', 'DELETE'])
 def employee():
     if request.method == 'PUT':
         id = str(request.json["id"])
@@ -161,6 +161,16 @@ def employee():
             mimetype='application/json'
         )
         return response
+
+    if request.method == 'DELETE':
+        id = request.args.get('id')
+        cursor = conn.cursor()
+        cursor.execute(
+            'DELETE FROM Employee WHERE id = "' + id + '";')
+        cursor.close()
+        conn.commit()
+        return request.method
+
 
 @app.route(default_path + 'auth/login', methods=['POST'])
 def login():
@@ -236,19 +246,59 @@ def hotels():
         status=200,
         mimetype='application/json'
     )
-    return response
+    return response\
 
 
-@app.route(default_path + 'clients', methods=['GET'])
-def clients():
+@app.route(default_path + 'statuses', methods=['GET'])
+def statuses():
     response = app.response_class(
-        response=query_db('SELECT Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status, Series, Number, \
-        IssuanceDate, EndDate, IssuedAt FROM User INNER JOIN Passport ON User.Passport_id = Passport.id \
-        INNER JOIN Status On User.Status_id = Status.id;'),
+        response=query_db('SELECT * FROM Status;'),
         status=200,
         mimetype='application/json'
     )
     return response
+
+
+@app.route(default_path + 'clients', methods=['GET', 'POST'])
+def clients():
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status, Series, Number, \
+            IssuanceDate, EndDate, IssuedAt FROM User INNER JOIN Passport ON User.Passport_id = Passport.id \
+            INNER JOIN Status On User.Status_id = Status.id;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+    if request.method == 'POST':
+        name = str(request.json["name"])
+        fullname = str(request.json["fullName"])
+        date_of_birth = str(request.json["dateOfBirth"])
+        place_of_birth = str(request.json["placeOfBirth"])
+        series = str(request.json["series"])
+        number = str(request.json["number"])
+        issuance_date = str(request.json["issuanceDate"])
+        end_date = str(request.json["endDate"])
+        issued_at = str(request.json["issuedAt"])
+        sex = str(request.json["sex"])
+        status = str(request.json["status"])
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) VALUES (NULL, "' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date + '", "' + issued_at + '");')
+        cursor.execute(
+            'SELECT LAST_INSERT_ID() AS lastId;')
+        passport_id = str(cursor.fetchall()[0][0])
+        cursor.execute(
+            'INSERT INTO `User` (id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status_id, Passport_id) VALUES (NULL, "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth + '", "' + place_of_birth + '", "' + status + '", "' + passport_id + '");')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
 
 if __name__ == '__main__':

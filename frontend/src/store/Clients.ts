@@ -1,7 +1,7 @@
 import {makeAutoObservable} from "mobx";
 import {clientsAPI} from "../api/api";
 
-type ClientsType = Array<{
+export type ClientItemType = {
     Name: string
     FullName: string
     Sex: string
@@ -13,20 +13,22 @@ type ClientsType = Array<{
     IssuanceDate: string
     EndDate: string
     IssuedAt: string
-}> | null
+}
+
+export type ClientsType = Array<ClientItemType> | null
 
 class Clients {
-    clients:ClientsType = null
+    clients: ClientsType = null
 
     constructor() {
         makeAutoObservable(this)
     }
 
     loadClients() {
-        clientsAPI.getClients().then(response => {
+        return clientsAPI.getClients().then(response => {
             response.map((item: { Sex: string; }) => {
-                return item.Sex === "male" ? item.Sex = "Мужчина":
-                    item.Sex = "Женищна"
+                return item.Sex === "male" ? item.Sex = "Мужчина" :
+                    item.Sex = "Женщина"
             })
             this.clients = response
         })

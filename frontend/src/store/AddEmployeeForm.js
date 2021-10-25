@@ -6,25 +6,36 @@ import {usersAPI} from "../api/api";
 import {sha512} from "js-sha512";
 
 const plugins = {
-  dvr: dvr(validatorjs),
+  dvr: dvr({
+    package: validatorjs,
+    extend: ({ validator, form }) => {
+      const messages = validator.getMessages('en');
+      messages.required = 'Поле обязательно для заполнения';
+      messages.email = 'Некорректный формат email';
+      messages.between = 'Поле должно содержать от :min до :max символов';
+      messages.regex = 'Поле должно содержать только буквы';
+      messages.size = 'Дата должна быть после 1900 года и до сегодняшнего дня';
+      validator.setMessages('en', messages);
+    }
+  }),
 };
 
 const fields = [{
   name: 'name',
   label: 'Имя',
   placeholder: 'Введите Имя',
-  rules: 'required|string',
+  rules: 'required|string|between:1,63|regex:/[a-zA-Zа-яА-Я]+$/',
   type: 'text'
 }, {
   name: 'fullName',
   label: 'Ф.И.О.',
   placeholder: 'Введите Ф.И.О.',
-  rules: 'required|string|between:5,25',
+  rules: 'required|string|between:1,255|regex:/[a-zA-Zа-яА-Я]+$/',
   type: 'text'
 }, {
   name: 'dateOfBirth',
   label: 'Дата рождения',
-  placeholder: 'Введите дату рождения',
+  placeholder: 'Введите дату рождения|size:10',
   rules: 'required|date',
   type: 'date'
 }, {
@@ -35,12 +46,14 @@ const fields = [{
 }, {
   name: 'email',
   label: 'Email',
-  rules: 'required|string|between:5,25|email',
+  placeholder: 'Введите email',
+  rules: 'required|string|email',
   type: 'email'
 }, {
   name: 'password',
   label: 'Пароль',
-  rules: 'required|string|between:5,25',
+  placeholder: 'Введите пароль',
+  rules: 'required|string|between:8,63',
   type: 'password'
 },{
   name: "organization",

@@ -7,20 +7,29 @@ import {sha512} from "js-sha512";
 import {UserInstance} from "./User";
 
 const plugins = {
-  dvr: dvr(validatorjs),
+  dvr: dvr({
+    package: validatorjs,
+    extend: ({ validator, form }) => {
+      const messages = validator.getMessages('en');
+      messages.required = 'Поле обязательно для заполнения';
+      messages.email = 'Некорректный формат email';
+      messages.between = 'Поле должно содержать от :min до :max символов';
+      validator.setMessages('en', messages);
+    }
+  }),
 };
 
 const fields = [{
   name: 'email',
   label: 'Email',
   placeholder: 'Введите Email',
-  rules: 'required|email|string|between:5,25',
+  rules: 'required|email|string',
   type: 'email'
 }, {
   name: 'password',
   label: 'Пароль',
   placeholder: 'Введите пароль',
-  rules: 'required|string|between:5,25',
+  rules: 'required|string|between:8,63',
   type: 'password'
 }];
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import EmployeesInstance from "../store/Employees";
+import Client from "../store/Clients";
 
 // export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
 export const baseURL = "http://127.0.0.1:5000/api/"
@@ -49,6 +50,12 @@ export const usersAPI = {
             organization,
             position
         }).then(response => {
+            EmployeesInstance.loadEmployees()
+            return response.data
+        });
+    },
+    deleteEmployee(id: Number) {
+        return instance.delete(`employee?id=` + id, {}).then(response => {
             EmployeesInstance.loadEmployees()
             return response.data
         });
@@ -127,5 +134,38 @@ export const clientsAPI = {
     getClients() {
         return instance.get(`clients`)
             .then(response => response.data);
+    },
+    getStatuses() {
+        return instance.get(`statuses`)
+            .then(response => response.data);
+    },
+    async addClient(
+        name: String,
+        fullName: String,
+        dateOfBirth: Date,
+        placeOfBirth: String,
+        series: Number,
+        number: Number,
+        issuanceDate: Date,
+        endDate: Date,
+        issuedAt: String,
+        sex: String,
+        status: String,
+    ) {
+        const response = await instance.post(`clients`, {
+            name,
+            fullName,
+            dateOfBirth,
+            placeOfBirth,
+            series,
+            number,
+            issuanceDate,
+            endDate,
+            issuedAt,
+            sex,
+            status
+        })
+        Client.loadClients()
+        return response
     },
 }

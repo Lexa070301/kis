@@ -2,14 +2,32 @@ import classes from "./Clients.module.css";
 import {observer} from "mobx-react-lite";
 import {toJS} from "mobx";
 import {Title} from "../common/Title/Title";
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
 import Client from "../../store/Clients";
+import {form} from "../../store/AddClientForm";
+import {AddClientForm} from "./AddClientForm";
+import Statuses, {StatusesType, StatusItemType} from "../../store/Statuses";
+import {PositionItemType} from "../../store/Positions";
+
 
 export const Clients = observer(() => {
     useEffect(() => {
-        if (!toJS(Client.clients)) Client.loadClients();
+        if (!toJS(Client.clients)) Client.loadClients().then(()=> {
+            if (!toJS(Statuses.statuses)) Statuses.loadStatuses().then();
+        });
     }, []);
+
+    const statusesList: StatusesType = toJS(Statuses.statuses)
+
+    let statuses: Array<any> = []
+    if (statusesList)
+        statuses = statusesList.map((item: StatusItemType) => {
+            return {
+                value: item.id,
+                label: item.Status
+            }
+        })
 
     const columns = [
         {
@@ -115,7 +133,13 @@ export const Clients = observer(() => {
     return (
         <div>
             <Title text={"Клиенты"}/>
+            <button className={"common-btn " + classes.addClient__btn} onClick={() => {
+                // setIsOpen(!isOpen)
+            }}>
+                Новый клиент
+            </button>
             <div className={classes.table}>
+                <AddClientForm form={form} statuses={statuses}/>
                 <MUIDataTable
                     title={"Список Клиентов"}
                     data={data}

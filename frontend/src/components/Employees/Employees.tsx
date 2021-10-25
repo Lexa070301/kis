@@ -1,18 +1,26 @@
 import classes from "./Employees.module.css";
+
 import EmployeesInstance from "../../store/Employees";
-import {observer} from "mobx-react-lite";
-import {toJS} from "mobx";
-import {Title} from "../common/Title/Title";
-import React, {useEffect, useState} from "react";
-import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
-import {AddEmployeeForm} from "./AddEmployeeForm";
-import {form} from "../../store/AddEmployeeForm";
 import Org, {OrganisationItemType, OrganisationsType} from "../../store/Organisations";
 import Positions, {PositionItemType, PositionType} from "../../store/Positions";
-import EditIcon from "../../assets/images/icons/edit.svg";
-import Select from "react-select";
-import {usersAPI} from "../../api/api";
+import {form} from "../../store/AddEmployeeForm";
+
+import React, {useEffect, useState} from "react";
+
+import {observer} from "mobx-react-lite";
+import {toJS} from "mobx";
 import Swal from "sweetalert2";
+import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
+import Select from "react-select";
+
+import {AddEmployeeForm} from "./AddEmployeeForm";
+import {Title} from "../common/Title/Title";
+
+import {usersAPI} from "../../api/api";
+
+import EditIcon from "../../assets/images/icons/edit.svg";
+import DeleteIcon from "../../assets/images/icons/delete.svg";
+
 
 type CellValueType = string | number | readonly string[] | undefined
 
@@ -175,19 +183,35 @@ export const Employees = observer(() => {
                     <>
                         {
                             editEmployee !== tableMeta.rowData[tableMeta.rowData.length - 1] ?
-                                <img src={EditIcon} alt="Edit" className={classes.editEmployee} onClick={() => {
-                                    setEditFormData({
-                                        name: tableMeta.rowData[0],
-                                        fullName: tableMeta.rowData[1],
-                                        date: tableMeta.rowData[2],
-                                        email: tableMeta.rowData[3],
-                                        organization: organizations.filter((item) => item.label === tableMeta.rowData[4])[0],
-                                        position: positions.filter((item) => item.label === tableMeta.rowData[5])[0]
-                                    })
-                                    document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.remove("d-inline-flex");
-                                    document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.add("d-none");
-                                    setEditEmployee(tableMeta.rowData[tableMeta.rowData.length - 1])
-                                }}/> :
+                                <>
+                                    <img src={EditIcon} alt="Edit" className={classes.editEmployee} onClick={() => {
+                                        setEditFormData({
+                                            name: tableMeta.rowData[0],
+                                            fullName: tableMeta.rowData[1],
+                                            date: tableMeta.rowData[2],
+                                            email: tableMeta.rowData[3],
+                                            organization: organizations.filter((item) => item.label === tableMeta.rowData[4])[0],
+                                            position: positions.filter((item) => item.label === tableMeta.rowData[5])[0]
+                                        })
+                                        document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.remove("d-inline-flex");
+                                        document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.add("d-none");
+                                        setEditEmployee(tableMeta.rowData[tableMeta.rowData.length - 1])
+                                    }}/>
+                                    <img src={DeleteIcon} alt="Edit" className={classes.editEmployee} onClick={() => {
+                                        try {
+                                            usersAPI.deleteEmployee(tableMeta.rowData[tableMeta.rowData.length - 1]).then(response => {
+                                                if (response !== "error") {
+                                                    Swal.fire('Success', 'Сотрудник успешно удалён', 'success')
+                                                } else {
+                                                    Swal.fire('Ошибка', 'Что-то пошло не так', 'error')
+                                                }
+                                            })
+                                        } catch (e) {
+                                            Swal.fire('Ошибка', String(e), 'error')
+                                        }
+                                    }}/>
+                                </>
+                                 :
                                 <button className={"common-btn"} onClick={() => {
                                     document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.remove("d-none");
                                     document.querySelector('[data-testid="Filter Table-iconButton"]')?.classList.add("d-inline-flex");
