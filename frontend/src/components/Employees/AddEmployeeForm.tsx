@@ -38,7 +38,7 @@ export const AddEmployeeForm = observer(({form, organizations, positions}) => {
                             <label htmlFor={form.$('dateOfBirth').id} className={"common-label"}>
                                 {form.$('dateOfBirth').label}
                             </label>
-                            <input {...form.$('dateOfBirth').bind()} className={"common-input"}/>
+                            <input {...form.$('dateOfBirth').bind()} className={"common-input"} min="1900-01-01" max="2100-01-01"/>
                             <p className={"common-error"}>{form.$('dateOfBirth').error}</p>
                         </div>
                         <div>
