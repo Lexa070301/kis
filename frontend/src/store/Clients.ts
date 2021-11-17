@@ -2,6 +2,7 @@ import {makeAutoObservable} from "mobx";
 import {clientsAPI} from "../api/api";
 
 export type ClientItemType = {
+    Id: Number
     Name: string
     FullName: string
     Sex: string

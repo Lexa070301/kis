@@ -19,6 +19,8 @@ import {Clients} from "./components/Clients/Clients";
 import {ForAccountant} from "./components/ForAccountant/ForAccountant";
 import {ForAdmin} from "./components/ForAdmin/ForAdmin";
 import {Employees} from "./components/Employees/Employees";
+import {ForAgent} from "./components/ForAgent/ForAgent";
+import {PreliminaryAgreement} from "./components/PreliminaryAgreement/PreliminaryAgreement";
 
 const App = observer(() => {
     useEffect(() => {
@@ -47,6 +49,9 @@ const App = observer(() => {
         <Route path="/clients">
             <Clients/>
         </Route>
+        <Route path="/preliminary-agreement">
+            <PreliminaryAgreement/>
+        </Route>
     </>
 
     const accountantRoutes = <>
@@ -61,11 +66,19 @@ const App = observer(() => {
         </Route>
     </>
     const agentRoutes = <>
-        <Route path="/for-agent"></Route>
+        <Route path="/for-agent">
+            <ForAgent/>
+        </Route>
+        <Route path="/preliminary-agreement">
+            <PreliminaryAgreement/>
+        </Route>
     </>
     const adminRoutes = <>
         <Route path="/for-admin">
             <ForAdmin/>
+        </Route>
+        <Route path="/for-agent">
+            <ForAgent/>
         </Route>
         <Route path="/for-manager">
             <ForManager/>
@@ -93,6 +106,9 @@ const App = observer(() => {
         </Route>
         <Route path="/clients">
             <Clients/>
+        </Route>
+        <Route path="/preliminary-agreement">
+            <PreliminaryAgreement/>
         </Route>
     </>
     return (

@@ -1,6 +1,7 @@
 import axios from "axios";
 import EmployeesInstance from "../store/Employees";
 import Client from "../store/Clients";
+import PreliminaryAgreement from "../store/PreliminaryAgreement";
 
 // export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
 export const baseURL = "http://127.0.0.1:5000/api/"
@@ -166,6 +167,38 @@ export const clientsAPI = {
             status
         })
         Client.loadClients()
+        return response
+    },
+}
+
+export const documentsAPI = {
+    getPreliminaryAgreements() {
+        return instance.get(`preliminaryAgreements`)
+            .then(response => response.data);
+    },
+    async addPreliminaryAgreement(
+        Date: String,
+        Number: Number,
+        StartDate: String,
+        EndDate: String,
+        MembersCount: Number,
+        Employee: Number,
+        Organization: Number,
+        Client: Number,
+        Cities: Array<number>
+    ) {
+        const response = await instance.post(`preliminaryAgreements`, {
+            Date,
+            Number,
+            StartDate,
+            EndDate,
+            MembersCount,
+            Employee,
+            Organization,
+            Client,
+            Cities
+        })
+        PreliminaryAgreement.loadPreliminaryAgreements()
         return response
     },
 }

@@ -1,4 +1,5 @@
 import os
+from ast import literal_eval
 
 from flask import Flask, request
 from flask_cors import CORS
@@ -6,6 +7,7 @@ from flaskext.mysql import MySQL
 import json
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, verify_jwt_in_request
 from datetime import timedelta
+
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './static/images/'
@@ -79,7 +81,7 @@ def positions():
 @app.route(default_path + 'agents', methods=['GET'])
 def agents():
     response = app.response_class(
-        response=query_db('SELECT Name, FullName, Email, Organisation.Title AS Office FROM Employee \
+        response=query_db('SELECT Employee.id AS Id, Name, FullName, Email, Organisation.Title AS Office FROM Employee \
         INNER JOIN Position ON Employee.Position_id = Position.id \
         INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id \
         WHERE Position.Title = "Агент";'),
@@ -230,7 +232,7 @@ def countries():
 @app.route(default_path + 'cities', methods=['GET'])
 def cities():
     response = app.response_class(
-        response=query_db('SELECT City.Name AS City, Country.Name AS Country FROM City \
+        response=query_db('SELECT City.id AS Id, City.Name AS City, Country.Name AS Country FROM City \
         INNER JOIN Country ON City.Country_id = Country.id;'),
         status=200,
         mimetype='application/json'
@@ -246,10 +248,11 @@ def hotels():
         status=200,
         mimetype='application/json'
     )
-    return response\
+    return response \
+ \
+           @ app.route(default_path + 'statuses', methods=['GET'])
 
 
-@app.route(default_path + 'statuses', methods=['GET'])
 def statuses():
     response = app.response_class(
         response=query_db('SELECT * FROM Status;'),
@@ -263,7 +266,7 @@ def statuses():
 def clients():
     if request.method == 'GET':
         response = app.response_class(
-            response=query_db('SELECT Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status, Series, Number, \
+            response=query_db('SELECT User.id AS Id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status, Series, Number, \
             IssuanceDate, EndDate, IssuedAt FROM User INNER JOIN Passport ON User.Passport_id = Passport.id \
             INNER JOIN Status On User.Status_id = Status.id;'),
             status=200,
@@ -285,12 +288,74 @@ def clients():
         status = str(request.json["status"])
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) VALUES (NULL, "' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date + '", "' + issued_at + '");')
+            'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) \
+            VALUES (NULL, "' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date + '", "' + issued_at + '");')
         cursor.execute(
             'SELECT LAST_INSERT_ID() AS lastId;')
         passport_id = str(cursor.fetchall()[0][0])
         cursor.execute(
-            'INSERT INTO `User` (id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status_id, Passport_id) VALUES (NULL, "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth + '", "' + place_of_birth + '", "' + status + '", "' + passport_id + '");')
+            'INSERT INTO `User` (id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status_id, Passport_id) \
+            VALUES (NULL, "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth + '", "' + place_of_birth + '", "' + status + '", "' + passport_id + '");')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+
+@app.route(default_path + 'preliminaryAgreements', methods=['GET', 'POST'])
+def preliminary_agreements():
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT PreliminaryAgreement.Date AS Date, '
+                              'PreliminaryAgreement.id AS Id, '
+                              'PreliminaryAgreement.Number AS Number, '
+                              'PreliminaryAgreement.StartDate AS StartDate, '
+                              'PreliminaryAgreement.EndDate AS EndDate, '
+                              'PreliminaryAgreement.MembersCount AS MembersCount, '
+                              'Employee.Name AS Employee, '
+                              'Organisation.Title AS Organization, '
+                              'User.FullName AS Client '
+                              'FROM PreliminaryAgreement '
+                              'INNER JOIN Employee ON PreliminaryAgreement.Employee_id = Employee.id '
+                              'INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+    if request.method == 'POST':
+        date = str(request.json["Date"])
+        number = str(request.json["Number"])
+        start_date = str(request.json["StartDate"])
+        end_date = str(request.json["EndDate"])
+        members_count = str(request.json["MembersCount"])
+        if "Employee" in request.json:
+            employee = str(request.json["Employee"])
+        else:
+            employee = ''
+        organization = str(request.json["Organization"])
+        client = str(request.json["Client"])
+        cities = list(request.json["Cities"])
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO `PreliminaryAgreement` (`id`, `Date`, `Number`, `StartDate`, `EndDate`, `MembersCount`, `Employee_id`, `Organisation_id`, `User_id`) \
+            VALUES (NULL, "' + date + '", "' + number + '", "' + start_date + '", "' + end_date + '", "' + members_count + '", "' + employee + '", "' + organization + '", "' + client + '");')
+        cursor.execute(
+            'SELECT LAST_INSERT_ID() AS lastId;')
+        preliminary_agreement_id = str(cursor.fetchall()[0][0])
+
+        i = 0
+        for item in cities:
+            cursor.execute(
+                'INSERT INTO `CityToVisit` (id, CityToVisit.Order, 	PreliminaryAgreement_id, City_id) \
+                VALUES (NULL, "' + str(i) + '", "' + str(preliminary_agreement_id) + '", "' + str(item) + '");')
+            i += 1
+
         cursor.close()
         conn.commit()
         response = app.response_class(

@@ -18,7 +18,9 @@ export const AsideMenu = observer(() => {
     const accountantLink = <NavLink to={"/for-accountant"} className={classes.link} activeClassName={classes.active}>
         Для бухгалтера
     </NavLink>
-    const agentLink = <></>
+    const agentLink = <NavLink to={"/for-agent"} className={classes.link} activeClassName={classes.active}>
+        Для агента
+    </NavLink>
     const adminLinks = <>
         {managerLink}
         {accountantLink}
