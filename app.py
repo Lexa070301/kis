@@ -316,12 +316,84 @@ def preliminary_agreements():
                               'PreliminaryAgreement.StartDate AS StartDate, '
                               'PreliminaryAgreement.EndDate AS EndDate, '
                               'PreliminaryAgreement.MembersCount AS MembersCount, '
+                              'PreliminaryAgreement.Status AS Status, '
                               'Employee.Name AS Employee, '
                               'Organisation.Title AS Organization, '
                               'User.FullName AS Client '
                               'FROM PreliminaryAgreement '
-                              'INNER JOIN Employee ON PreliminaryAgreement.Employee_id = Employee.id '
-                              'INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              'LEFT JOIN Employee ON PreliminaryAgreement.Employee_id = Employee.id '
+                              'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+    if request.method == 'POST':
+        date = str(request.json["Date"])
+        number = str(request.json["Number"])
+        start_date = str(request.json["StartDate"])
+        end_date = str(request.json["EndDate"])
+        members_count = str(request.json["MembersCount"])
+        if request.json["Employee"] != '':
+            employee = '"' + str(request.json["Employee"]) + '"'
+        else:
+            employee = 'NULL'
+        organization = str(request.json["Organization"])
+        client = str(request.json["Client"])
+        cities = list(request.json["Cities"])
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO `PreliminaryAgreement` (`id`, `Date`, `Number`, `StartDate`, `EndDate`, `MembersCount`, `Status`, `Employee_id`, `Organisation_id`, `User_id`) \
+            VALUES (NULL, "' + date + '", "' + number + '", "' + start_date + '", "' + end_date + '", "' + members_count + '", "open", ' + employee + ', "' + organization + '", "' + client + '");')
+        cursor.execute(
+            'SELECT LAST_INSERT_ID() AS lastId;')
+        preliminary_agreement_id = str(cursor.fetchall()[0][0])
+
+        i = 0
+        for item in cities:
+            cursor.execute(
+                'INSERT INTO `CityToVisit` (id, CityToVisit.Order, 	PreliminaryAgreement_id, City_id) \
+                VALUES (NULL, "' + str(i) + '", "' + str(preliminary_agreement_id) + '", "' + str(item) + '");')
+            i += 1
+        cursor.execute(
+            'INSERT INTO `Contract` (`id`, `Date`, `Number`, `StartDate`, `EndDate`,`Sum`, `Status`, `MembersCount`, `PreliminaryAgreement_id`, `Employee_id`, `Organisation_id`) \
+            VALUES (NULL, NULL, NULL, "' + start_date + '", "' + end_date + '", NULL, "open", "' + members_count + '", "' + preliminary_agreement_id + '", ' + employee + ', "' + organization + '");')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+
+@app.route(default_path + 'contracts', methods=['GET', 'POST'])
+def contracts():
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT Contract.Date AS Date, '
+                              'Contract.id AS Id, '
+                              'Contract.Number AS Number, '
+                              'Contract.StartDate AS StartDate, '
+                              'Contract.EndDate AS EndDate, '
+                              'Contract.MembersCount AS MembersCount, '
+                              'Contract.Status AS Status, '
+                              'Contract.Sum AS Sum, '
+                              'PreliminaryAgreement.Number AS PreliminaryAgreement, '
+                              'PreliminaryAgreement.id AS PreliminaryAgreementId, '
+                              'PreliminaryAgreement.Date AS PreliminaryAgreementDate, '
+                              'User.FullName AS Client, '
+                              'User.id AS ClientId, '
+                              'Employee.Name AS Employee, '
+                              'Employee.id AS EmployeeId, '
+                              'Organisation.Title AS Organization, '
+                              'Organisation.id AS OrganizationId '
+                              'FROM Contract '
+                              'LEFT JOIN Employee ON Contract.Employee_id = Employee.id '
+                              'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              'INNER JOIN PreliminaryAgreement ON Contract.PreliminaryAgreement_id = PreliminaryAgreement.id '
                               'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
             status=200,
             mimetype='application/json'

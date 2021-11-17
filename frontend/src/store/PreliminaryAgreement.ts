@@ -11,6 +11,7 @@ export type PreliminaryAgreementItemType = {
     Employee: string
     Organization: string
     Client: string
+    Status: string
 }
 
 export type PreliminaryAgreementsType = Array<PreliminaryAgreementItemType> | null
@@ -28,4 +29,5 @@ class PreliminaryAgreements {
 }
 
 
-export default new PreliminaryAgreements()
+export default
+new PreliminaryAgreements()

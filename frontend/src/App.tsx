@@ -21,6 +21,7 @@ import {ForAdmin} from "./components/ForAdmin/ForAdmin";
 import {Employees} from "./components/Employees/Employees";
 import {ForAgent} from "./components/ForAgent/ForAgent";
 import {PreliminaryAgreement} from "./components/PreliminaryAgreement/PreliminaryAgreement";
+import {Contract} from "./components/Contract/Contract";
 
 const App = observer(() => {
     useEffect(() => {
@@ -51,6 +52,9 @@ const App = observer(() => {
         </Route>
         <Route path="/preliminary-agreement">
             <PreliminaryAgreement/>
+        </Route>
+        <Route path="/contracts">
+            <Contract/>
         </Route>
     </>
 
@@ -109,6 +113,9 @@ const App = observer(() => {
         </Route>
         <Route path="/preliminary-agreement">
             <PreliminaryAgreement/>
+        </Route>
+        <Route path="/contracts">
+            <Contract isOpen={true} currentContract={27}/>
         </Route>
     </>
     return (

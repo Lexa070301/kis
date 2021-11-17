@@ -174,6 +174,12 @@ export const clientsAPI = {
 export const documentsAPI = {
     getPreliminaryAgreements() {
         return instance.get(`preliminaryAgreements`)
+            .then(response => {
+                return response.data
+            });
+    },
+    getContracts() {
+        return instance.get(`contracts`)
             .then(response => response.data);
     },
     async addPreliminaryAgreement(
@@ -196,7 +202,8 @@ export const documentsAPI = {
             Employee,
             Organization,
             Client,
-            Cities
+            Cities,
+            Status: "open"
         })
         PreliminaryAgreement.loadPreliminaryAgreements()
         return response

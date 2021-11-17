@@ -74,7 +74,7 @@
 }
 
 div[class$="control"][class^=" css"] {
-    height: 45px!important;
+    min-height: 45px!important;
 }
 
 div[id^="react-select"][class$="menu"] {

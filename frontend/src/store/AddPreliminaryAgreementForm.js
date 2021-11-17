@@ -25,6 +25,7 @@ const plugins = {
 const organizationHandlers = {
   onChange: (field) => (e) => {
     field.set(e);
+    form.$('agent').reset()
     Agents.currentOrganization = e.label
   },
 }
@@ -32,6 +33,7 @@ const organizationHandlers = {
 const countryHandlers = {
   onChange: (field) => (e) => {
     field.set(e);
+    form.$('cities').reset()
     Cities.currentCity = e.label
   },
 }
@@ -103,7 +105,6 @@ const fields = [{
 const hooks = {
   onSuccess(form) {
     const cities = form.values().cities.map(item => toJS(item))
-    console.log(cities)
     try {
       documentsAPI.addPreliminaryAgreement(
           form.values().date,
@@ -117,7 +118,7 @@ const hooks = {
           form.values().cities,
       ).then(response => {
         if (response !== "error") {
-          Swal.fire('Success', 'Предворительное соглашение успешно добавлено', 'success')
+          Swal.fire('Success', 'Предварительное соглашение успешно добавлено', 'success')
         } else {
           Swal.fire('Ошибка', 'Что-то пошло не так', 'error')
         }
