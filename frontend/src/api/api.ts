@@ -3,8 +3,8 @@ import EmployeesInstance from "../store/Employees";
 import Client from "../store/Clients";
 import PreliminaryAgreement from "../store/PreliminaryAgreement";
 
-// export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
-export const baseURL = "http://127.0.0.1:5000/api/"
+export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
+// export const baseURL = "http://127.0.0.1:5000/api/"
 
 const instance = axios.create({
     withCredentials: true,

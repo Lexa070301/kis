@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import './App.css';
 import {
-    BrowserRouter as Router,
+    BrowserRouter as Router, Redirect,
     Route, Switch
 } from "react-router-dom";
 import {AsideMenu} from "./components/AsideMenu/AsideMenu";
@@ -22,10 +22,25 @@ import {Employees} from "./components/Employees/Employees";
 import {ForAgent} from "./components/ForAgent/ForAgent";
 import {PreliminaryAgreement} from "./components/PreliminaryAgreement/PreliminaryAgreement";
 import {Contract} from "./components/Contract/Contract";
+import {toast, ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
+
 
 const App = observer(() => {
     useEffect(() => {
         UserInstance.checkAuth();
+        setInterval(() => {
+            console.log('test')
+            toast.info('wow', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }, 5000)
     }, []);
 
     const managerRoutes = <>
@@ -123,6 +138,7 @@ const App = observer(() => {
             <AsideMenu/>
             <div className="App">
                 <div className="container">
+                    {/*<ToastContainer/>*/}
                     <Switch>
                         <Route path="/login">
                             <Login form={form}/>

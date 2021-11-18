@@ -17,7 +17,6 @@ import PreliminaryAgreement, {
     PreliminaryAgreementsType
 } from "../../store/PreliminaryAgreement";
 import {Loader} from "../common/Loader/Loader";
-import PreliminaryAgreements from "../../store/PreliminaryAgreement";
 
 
 export const Contract = observer((props: any) => {
@@ -264,11 +263,6 @@ export const Contract = observer((props: any) => {
         return (
             <div>
                 <Title text={"Договоры"}/>
-                {/*<button className={"common-btn " + classes.addClient__btn} onClick={() => {*/}
-                {/*    setIsOpen(!isOpen)*/}
-                {/*}}>*/}
-                {/*    Новое предварительное соглашение*/}
-                {/*</button>*/}
                 <div className={classes.table}>
                     {props.isOpen && <AddContractForm
                         form={form}
