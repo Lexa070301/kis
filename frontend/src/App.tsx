@@ -115,7 +115,7 @@ const App = observer(() => {
             <PreliminaryAgreement/>
         </Route>
         <Route path="/contracts">
-            <Contract isOpen={true} currentContract={27}/>
+            <Contract isOpen={true}/>
         </Route>
     </>
     return (

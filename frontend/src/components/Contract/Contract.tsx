@@ -25,39 +25,6 @@ export const Contract = observer((props: any) => {
     const [render, setRender] = useState(false)
 
     useEffect(() => {
-        // if (!toJS(Contracts.contracts)) Contracts.loadContracts().then(() => {
-        //     if (!toJS(PreliminaryAgreement.preliminaryAgreements)) PreliminaryAgreement.loadPreliminaryAgreements().then(() => {
-        //         if (!toJS(Org.organisations)) Org.loadOrganisations().then(() => {
-        //             if (!toJS(Agents.agents)) Agents.loadAgents().then(() => {
-        //                 if (!toJS(Countries.countries)) Countries.loadCountries().then(() => {
-        //                     if (!toJS(Client.clients)) Client.loadClients().then(() => {
-        //                         if (!toJS(Cities.cities)) Cities.loadCities().then(() => {
-        //                             if (!Contracts.currentContract?.Id) {
-        //                                 Contracts.setCurrentContract(props.currentContract)
-        //
-        //                                 const contract = Contracts.currentContract
-        //                                 form.$('membersCount').set(contract?.MembersCount)
-        //                                 form.$('startDate').set(contract?.StartDate)
-        //                                 form.$('endDate').set(contract?.EndDate)
-        //                                 form.$('organization').set({
-        //                                     value: contract?.OrganizationId,
-        //                                     label: contract?.Organization
-        //                                 })
-        //                                 form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
-        //                                 form.$('client').set({value: contract?.ClientId, label: contract?.Client})
-        //                                 form.$('preliminaryAgreement').set({
-        //                                     value: contract?.PreliminaryAgreementId,
-        //                                     label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
-        //                                 })
-        //                             }
-        //                             setRender(true)
-        //                         })
-        //                     })
-        //                 })
-        //             })
-        //         })
-        //     })
-        // });
         async function init() {
             if (!toJS(Contracts.contracts))
                 await Contracts.loadContracts()
@@ -73,7 +40,7 @@ export const Contract = observer((props: any) => {
                 await Client.loadClients()
             if (!toJS(Cities.cities))
                 await Cities.loadCities()
-            if (!Contracts.currentContract?.Id) {
+            if (!Contracts.currentContract?.Id && props.currentContract) {
                 Contracts.setCurrentContract(props.currentContract)
 
                 const contract = Contracts.currentContract

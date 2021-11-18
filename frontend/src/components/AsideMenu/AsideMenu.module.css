@@ -27,12 +27,12 @@
 }
 
 .link:hover {
-    color: var(--accent);
+    color: var(--primary);
     transform: rotate(-4deg) scale(1.1);
 }
 
 .active {
-    color: var(--accent);
+    color: var(--primary);
     transform: rotate(-4deg) scale(1.1);
 }
 
