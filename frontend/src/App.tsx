@@ -22,26 +22,16 @@ import {Employees} from "./components/Employees/Employees";
 import {ForAgent} from "./components/ForAgent/ForAgent";
 import {PreliminaryAgreement} from "./components/PreliminaryAgreement/PreliminaryAgreement";
 import {Contract} from "./components/Contract/Contract";
-import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
+import {Notifications} from "./components/Notifications/Notifications";
 
 
 const App = observer(() => {
+
     useEffect(() => {
         UserInstance.checkAuth();
-        setInterval(() => {
-            console.log('test')
-            toast.info('wow', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        }, 5000)
     }, []);
+
 
     const managerRoutes = <>
         <Route path="/for-manager">
@@ -49,6 +39,9 @@ const App = observer(() => {
         </Route>
         <Route path="/organizations">
             <Organizations/>
+        </Route>
+        <Route path="/notifications">
+            <Notifications position={UserInstance.position}/>
         </Route>
         <Route path="/agents">
             <Agents/>
@@ -80,6 +73,9 @@ const App = observer(() => {
         <Route path="/organizations">
             <Organizations/>
         </Route>
+        <Route path="/notifications">
+            <Notifications position={UserInstance.position}/>
+        </Route>
         <Route path="/clients">
             <Clients/>
         </Route>
@@ -108,6 +104,9 @@ const App = observer(() => {
         <Route path="/organizations">
             <Organizations/>
         </Route>
+        <Route path="/notifications">
+            <Notifications position={UserInstance.position}/>
+        </Route>
         <Route path="/agents">
             <Agents/>
         </Route>
@@ -130,7 +129,7 @@ const App = observer(() => {
             <PreliminaryAgreement/>
         </Route>
         <Route path="/contracts">
-            <Contract isOpen={true}/>
+            <Contract/>
         </Route>
     </>
     return (
@@ -138,7 +137,6 @@ const App = observer(() => {
             <AsideMenu/>
             <div className="App">
                 <div className="container">
-                    {/*<ToastContainer/>*/}
                     <Switch>
                         <Route path="/login">
                             <Login form={form}/>

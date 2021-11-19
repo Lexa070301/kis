@@ -3,25 +3,40 @@ import Org from "../../store/Organisations";
 import {observer} from "mobx-react-lite";
 import {toJS} from "mobx";
 import {Title} from "../common/Title/Title";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import {Loader} from "../common/Loader/Loader";
 
 export const Organizations = observer(() => {
+
+    const [render, setRender] = useState(false)
+
     useEffect(() => {
-        if(!toJS(Org.organisations)) Org.loadOrganisations();
+        async function init() {
+            if (!toJS(Org.organisations))
+                await Org.loadOrganisations();
+            setRender(true)
+        }
+
+        init()
     }, []);
-    
-    return (
-        <div>
-            <Title text={"Организации"}/>
-            <div className={classes.organizations}>
-                {toJS(Org.organisations)?.map((item, index) => {
-                    return (
-                        <div className={classes.item} key={index}>
-                            <span>{item.Title}</span>
-                        </div>
-                    )
-                })}
+
+    if (render) {
+
+        return (
+            <div>
+                <Title text={"Организации"}/>
+                <div className={classes.organizations}>
+                    {toJS(Org.organisations)?.map((item, index) => {
+                        return (
+                            <div className={classes.item} key={index}>
+                                <span>{item.Title}</span>
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return <Loader/>
+    }
 });

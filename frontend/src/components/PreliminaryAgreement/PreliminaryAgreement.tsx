@@ -13,6 +13,7 @@ import Agents, {AgentsItemType, AgentsType} from "../../store/Agents";
 import Countries, {CountriesType, CountryItemType} from "../../store/Countries";
 import Cities, {CitiesType, CityItemType} from "../../store/Cities";
 import {Loader} from "../common/Loader/Loader";
+import Hotels from "../../store/Hotels";
 
 
 export const PreliminaryAgreement = observer(() => {
@@ -73,7 +74,7 @@ export const PreliminaryAgreement = observer(() => {
             })
 
 
-        if (Cities.currentCity !== '') {
+        if (Cities.currentCountry !== '') {
             cities = Cities.getCurrentCities()
         }
 
@@ -195,7 +196,7 @@ export const PreliminaryAgreement = observer(() => {
                         clients={clients}
                         cities={cities}
                         currentOrganization={Boolean(Agents.currentOrganization == '')}
-                        currentCountry={Boolean(Cities.currentCity == '')}
+                        currentCountry={Boolean(Cities.currentCountry == '')}
                     />}
                     <MUIDataTable
                         title={"Список Предварительных соглашений"}

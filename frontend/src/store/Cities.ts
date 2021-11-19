@@ -11,7 +11,7 @@ export type CitiesType = Array<CityItemType> | null
 
 class Cities {
     cities:CitiesType = null
-    currentCity = ''
+    currentCountry = ''
 
     constructor() {
         makeAutoObservable(this)
@@ -23,7 +23,7 @@ class Cities {
 
     getCurrentCities() {
         return toJS(this.cities?.map((item: CityItemType) => {
-            if(item.Country === this.currentCity) {
+            if(item.Country === this.currentCountry) {
                 return {
                     value: item.Id,
                     label: item.City

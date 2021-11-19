@@ -6,7 +6,8 @@ import {form} from "../../store/AddContractForm";
 
 
 // @ts-ignore
-export const AddContractForm = observer(({form, organizations, agents, countries, clients, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract}) => {
+export const AddContractForm = observer(({form,organizations,agents, countries, clients, hotels, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract, currentCities
+                                         }) => {
         return (
             <div className={classes.addClient__form}>
                 <form className={classes.form}>
@@ -53,7 +54,6 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                             </label>
                             <Select
                                 isClearable
-                                // isDisabled={currentOrganization}
                                 isSearchable
                                 options={agents}
                                 {...form.$("agent").bind()}
@@ -106,17 +106,30 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                             <p className={"common-error"}>{form.$('country').error}</p>
                         </div>
                         <div>
-                            <label htmlFor={form.$('cities').id} className={"common-label select-label"}>
-                                {form.$('cities').label}
+                            <label htmlFor={form.$('cities1').id} className={"common-label select-label"}>
+                                {form.$('cities1').label}
                             </label>
                             <Select
                                 isMulti
                                 isSearchable
                                 isDisabled={currentCountry}
                                 options={cities}
-                                {...form.$("cities").bind()}
+                                {...form.$("cities1").bind()}
                             />
-                            <p className={"common-error"}>{form.$('cities').error}</p>
+                            <p className={"common-error"}>{form.$('cities1').error}</p>
+                        </div>
+                        <div>
+                            <label htmlFor={form.$('hotels1').id} className={"common-label select-label"}>
+                                {form.$('hotels1').label}
+                            </label>
+                            <Select
+                                isMulti
+                                isSearchable
+                                isDisabled={currentCities}
+                                options={hotels}
+                                {...form.$("hotels1").bind()}
+                            />
+                            <p className={"common-error"}>{form.$('hotels1').error}</p>
                         </div>
                         <div>
                             <label htmlFor={form.$('members').id} className={"common-label select-label"}>
@@ -128,8 +141,14 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                                 options={members}
                                 {...form.$("members").bind()}
                             />
-                            <p className={"common-error"}>{form.$('cities').error}</p>
+                            <p className={"common-error"}>{form.$('members').error}</p>
                         </div>
+                        <div>
+                            <button onClick={()=> {
+
+                            }}>Добавить</button>
+                        </div>
+                        <div/>
                         <button type="submit" onClick={form.onSubmit} className={"common-btn"}>
                             Записать
                         </button>

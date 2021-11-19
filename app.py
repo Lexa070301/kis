@@ -240,14 +240,42 @@ def cities():
     return response
 
 
+@app.route(default_path + 'citiesToVisit', methods=['GET'])
+def cities_to_visit():
+    agreement_id = request.args.get('agreementId')
+    response = app.response_class(
+        response=query_db('SELECT City.id AS CityId, City.Name AS City, Country.id AS CountryId, \
+        Country.Name AS Country FROM CityToVisit INNER JOIN City ON CityToVisit.City_id = City.id INNER JOIN Country \
+        ON City.Country_id = Country.id WHERE PreliminaryAgreement_id = "' + agreement_id + '"'),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
 @app.route(default_path + 'hotels', methods=['GET'])
 def hotels():
     response = app.response_class(
-        response=query_db('SELECT Hotel.Name AS Hotel, Address, City.Name AS City, Country.Name AS Country \
+        response=query_db('SELECT Hotel.id AS Id, Hotel.Name AS Hotel, Address, City.Name AS City, Country.Name AS Country \
         FROM Hotel INNER JOIN City ON Hotel.City_id = City.id INNER JOIN Country ON City.Country_id = Country.id;'),
         status=200,
         mimetype='application/json'
     )
+    return response
+
+
+@app.route(default_path + 'notifications', methods=['GET'])
+def notifications():
+    position = request.args.get('position')
+    response = ""
+    if position == "Администратор" or position == "Менеджер":
+        query = query_db('SELECT PreliminaryAgreement.id as Id, "Contract" as Type, CONCAT("Соглашение № ",PreliminaryAgreement.Number, " от ", PreliminaryAgreement.Date) as Text FROM Contract INNER JOIN PreliminaryAgreement ON \
+            Contract.PreliminaryAgreement_id = PreliminaryAgreement.id WHERE Contract.Status = "open";')
+        response = app.response_class(
+            response=query,
+            status=200,
+            mimetype='application/json'
+        )
     return response
 
 

@@ -1,12 +1,31 @@
 import classes from "./AsideMenu.module.css";
 import {
-    NavLink
+    NavLink, useHistory
 } from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {UserInstance} from "../../store/User";
-import React from "react";
+import React, {useEffect} from "react";
+import {toast, ToastContainer} from "react-toastify";
 
 export const AsideMenu = observer(() => {
+
+    let history = useHistory();
+    useEffect(() => {
+        setInterval(() => {
+            toast.info('Проверьте уведомления!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                onClick() {
+                    history.push('/notifications')
+                }
+            });
+        }, 5000)
+    }, []);
     const onLeave = () => {
         UserInstance.logout();
     }
@@ -31,6 +50,7 @@ export const AsideMenu = observer(() => {
     </>
     return (
         <div className={classes.AsideMenu}>
+            <ToastContainer/>
             <NavLink to={"/"} exact className={classes.link} activeClassName={classes.active}>
                 Главная
             </NavLink>

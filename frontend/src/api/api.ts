@@ -2,9 +2,10 @@ import axios from "axios";
 import EmployeesInstance from "../store/Employees";
 import Client from "../store/Clients";
 import PreliminaryAgreement from "../store/PreliminaryAgreement";
+import Contract from "../store/Contract";
 
-export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
-// export const baseURL = "http://127.0.0.1:5000/api/"
+// export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
+export const baseURL = "http://127.0.0.1:5000/api/"
 
 const instance = axios.create({
     withCredentials: true,
@@ -125,6 +126,10 @@ export const hotelsAPI = {
         return instance.get(`cities`)
             .then(response => response.data);
     },
+    getCitiesToVisit(agreementId: number) {
+        return instance.get(`citiesToVisit?agreementId=` + agreementId)
+            .then(response => response.data);
+    },
     getHotels() {
         return instance.get(`hotels`)
             .then(response => response.data);
@@ -182,6 +187,10 @@ export const documentsAPI = {
         return instance.get(`contracts`)
             .then(response => response.data);
     },
+    getNotifications(position: string) {
+        return instance.get(`notifications?position=` + position)
+            .then(response => response.data);
+    },
     async addPreliminaryAgreement(
         Date: String,
         Number: Number,
@@ -206,6 +215,7 @@ export const documentsAPI = {
             Status: "open"
         })
         PreliminaryAgreement.loadPreliminaryAgreements()
+        Contract.loadContracts()
         return response
     },
 }

@@ -17,11 +17,13 @@ import PreliminaryAgreement, {
     PreliminaryAgreementsType
 } from "../../store/PreliminaryAgreement";
 import {Loader} from "../common/Loader/Loader";
+import Hotels, {HotelItemType, HotelsType} from "../../store/Hotels";
 
 
 export const Contract = observer((props: any) => {
 
     const [render, setRender] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
 
     useEffect(() => {
         async function init() {
@@ -39,29 +41,49 @@ export const Contract = observer((props: any) => {
                 await Client.loadClients()
             if (!toJS(Cities.cities))
                 await Cities.loadCities()
-            if (!Contracts.currentContract?.Id && props.currentContract) {
-                Contracts.setCurrentContract(props.currentContract)
+            if (!toJS(Hotels.hotels))
+                await Hotels.loadHotels()
+            if (Contracts.currentAgreement !== '') {
+                await Contracts.setCurrentContract(Number(Contracts.currentAgreement))
 
                 const contract = Contracts.currentContract
                 form.$('membersCount').set(contract?.MembersCount)
                 form.$('startDate').set(contract?.StartDate)
                 form.$('endDate').set(contract?.EndDate)
-                form.$('organization').set({
-                    value: contract?.OrganizationId,
-                    label: contract?.Organization
-                })
-                form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
+                if (!contract?.OrganizationId)
+                    form.$('organization').reset()
+                else
+                    form.$('organization').set({value: contract?.OrganizationId, label: contract?.Organization})
+                if (!contract?.EmployeeId)
+                    form.$('agent').reset()
+                else
+                    form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
                 form.$('client').set({value: contract?.ClientId, label: contract?.Client})
+                form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
+                form.$('cities1').set(Contracts.currentCities?.map(item => {
+                    return {
+                        value: item.Id,
+                        label: item.City
+                    }
+                }))
                 form.$('preliminaryAgreement').set({
                     value: contract?.PreliminaryAgreementId,
                     label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
                 })
+                setIsOpen(true)
             }
             setRender(true)
         }
 
         init()
     }, []);
+
+    useEffect(() => {
+        return () => {
+            Contracts.currentAgreement = ''
+        };
+    }, []);
+
     if (render) {
         const organizationList: OrganisationsType = toJS(Org.organisations)
         let organizations: Array<any> = []
@@ -94,6 +116,20 @@ export const Contract = observer((props: any) => {
                 }
             })
 
+        const hotelList: HotelsType = toJS(Hotels.hotels)
+        let hotels: Array<any> | undefined = []
+        if (hotelList)
+            hotels = hotelList.map((item: HotelItemType) => {
+                return {
+                    value: item.Id,
+                    label: item.Hotel
+                }
+            })
+
+        if (Hotels.currentCities !== []) {
+            hotels = Hotels.getCurrentHotels()
+        }
+
         const memberList: ClientsType = toJS(Client.clients)
         let members: Array<any> | undefined = []
         if (memberList)
@@ -115,7 +151,7 @@ export const Contract = observer((props: any) => {
             })
 
 
-        if (Cities.currentCity !== '') {
+        if (Cities.currentCountry !== '') {
             cities = Cities.getCurrentCities()
         }
 
@@ -264,18 +300,20 @@ export const Contract = observer((props: any) => {
             <div>
                 <Title text={"Договоры"}/>
                 <div className={classes.table}>
-                    {props.isOpen && <AddContractForm
+                    {isOpen && <AddContractForm
                         form={form}
                         organizations={organizations}
                         agents={agents}
                         countries={countries}
                         clients={clients}
                         cities={cities}
+                        hotels={hotels}
                         members={members}
                         preliminaryAgreements={preliminaryAgreements}
-                        currentContract={Boolean(Contracts.currentAgreement == '')}
-                        currentOrganization={Boolean(Agents.currentOrganization == '')}
-                        currentCountry={Boolean(Cities.currentCity == '')}
+                        currentContract={Boolean(Contracts.currentAgreement === '')}
+                        currentOrganization={Boolean(Agents.currentOrganization === '')}
+                        currentCountry={Boolean(Cities.currentCountry === '')}
+                        currentCities={Boolean(Hotels.currentCities.length === 0)}
                     />}
                     <MUIDataTable
                         title={"Список Договоров"}

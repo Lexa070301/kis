@@ -1,6 +1,8 @@
 import {makeAutoObservable, toJS} from "mobx";
-import {documentsAPI} from "../api/api";
+import {documentsAPI, hotelsAPI} from "../api/api";
 import {AgentsItemType} from "./Agents";
+import {CountriesType, CountryItemType} from "./Countries";
+import {CitiesType} from "./Cities";
 
 export type ContractItemType = {
     Id: number | null
@@ -26,7 +28,7 @@ export type ContractsType = Array<ContractItemType> | null
 
 class Contracts {
     contracts: ContractsType = null
-    currentAgreement: string = ''
+    currentAgreement: string = ""
     currentContract: ContractItemType | undefined = {
         Id: null,
         Date: null,
@@ -46,6 +48,8 @@ class Contracts {
         Sum: null,
         Status: null
     }
+    currentCountry: CountryItemType = {id: null, Name: null}
+    currentCities: CitiesType = []
 
     constructor() {
         makeAutoObservable(this)
@@ -56,8 +60,20 @@ class Contracts {
     }
 
     setCurrentContract(preliminaryAgreementId: number) {
-        if (preliminaryAgreementId)
-            this.currentContract = this.contracts?.filter((item) => item.PreliminaryAgreementId === preliminaryAgreementId)[0]
+        if (preliminaryAgreementId) {
+            return hotelsAPI.getCitiesToVisit(preliminaryAgreementId).then(response => {
+                this.currentCountry.id = response[0].CountryId
+                this.currentCountry.Name = response[0].Country
+                this.currentCities = response.map((item: any) => {
+                    return {
+                        Id: item.CityId,
+                        City: item.City,
+                        Country: item.Country
+                    }
+                })
+                this.currentContract = this.contracts?.filter((item) => item.PreliminaryAgreementId === preliminaryAgreementId)[0]
+            })
+        }
     }
 }
 

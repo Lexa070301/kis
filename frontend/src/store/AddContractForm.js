@@ -8,6 +8,7 @@ import Cities from "./Cities";
 import {documentsAPI} from "../api/api";
 import Contract from "./Contract";
 import Contracts from "./Contract";
+import Hotels from "./Hotels";
 
 const plugins = {
     dvr: dvr({
@@ -35,15 +36,29 @@ const organizationHandlers = {
 const countryHandlers = {
     onChange: (field) => (e) => {
         field.set(e);
-        form.$('cities').reset()
-        Cities.currentCity = e.label
+        form.$('cities1').reset()
+        Cities.currentCountry = e.label
+    },
+}
+
+const citiesHandlers = {
+    onChange: (field) => (e) => {
+        field.set(e);
+        form.$('hotels1').reset()
+        Hotels.currentCities = e.map(city => city.label)
+    },
+}
+
+const hotelsHandlers = {
+    onChange: (field) => (e) => {
+        field.set(e);
     },
 }
 
 const contractHandlers = {
-    onChange: (field) => (e) => {
+    onChange: (field) => async (e) => {
         field.set(e);
-        Contract.setCurrentContract(e.value)
+        await Contract.setCurrentContract(e.value)
 
         const contract = Contracts.currentContract
         form.$('membersCount').set(contract?.MembersCount)
@@ -58,6 +73,7 @@ const contractHandlers = {
         else
             form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
         form.$('client').set({value: contract?.ClientId, label: contract?.Client})
+        form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
         form.$('preliminaryAgreement').set({
             value: contract?.PreliminaryAgreementId,
             label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
@@ -105,11 +121,19 @@ const fields = [{
     placeholder: 'Выберите страну',
     output: country => country && country.value
 }, {
-    name: 'cities',
+    name: 'cities1',
     label: 'Города',
     rules: 'required',
+    handlers: citiesHandlers,
     placeholder: 'Выберите города',
     output: cities => cities && cities.map(item => toJS(item).value)
+}, {
+    name: 'hotels1',
+    label: 'Отели',
+    rules: 'required',
+    handlers: hotelsHandlers,
+    placeholder: 'Выберите отели',
+    output: hotels => hotels && hotels.map(item => toJS(item).value)
 }, {
     name: 'members',
     label: 'Участники поездки',

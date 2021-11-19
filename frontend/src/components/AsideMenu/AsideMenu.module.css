@@ -12,6 +12,7 @@
     color: white;
     background-color: var(--dark);
     font-family: var(--verdana);
+    z-index: 1001;
 }
 
 .link {

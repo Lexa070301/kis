@@ -2,8 +2,8 @@ import {makeAutoObservable} from "mobx";
 import {hotelsAPI} from "../api/api";
 
 export type CountryItemType = {
-    id: number
-    Name: string
+    id: number | null
+    Name: string | null
 }
 
 export type CountriesType = Array<CountryItemType> | null

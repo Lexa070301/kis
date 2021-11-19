@@ -28,27 +28,27 @@
 }
 
 .item[data-name="Германия"] {
-    background: url("../../assets/images/flags/Германия.jpg") center center no-repeat;
+    background: url("../../assets/images/flags/Germany.jpg") center center no-repeat;
     background-size: cover;
 }
 
 .item[data-name="Италия"] {
-    background: url("../../assets/images/flags/Италия.jpg") center center no-repeat;
+    background: url("../../assets/images/flags/Italy.jpg") center center no-repeat;
     background-size: cover;
 }
 
 .item[data-name="Испания"] {
-    background: url("../../assets/images/flags/Испания.jpg") center center no-repeat;
+    background: url("../../assets/images/flags/Spain.jpg") center center no-repeat;
     background-size: cover;
 }
 
 .item[data-name="Болгария"] {
-    background: url("../../assets/images/flags/Болгария.jpg") center center no-repeat;
+    background: url("../../assets/images/flags/Bulgaria.jpg") center center no-repeat;
     background-size: cover;
 }
 
 .item[data-name="Словения"] {
-    background: url("../../assets/images/flags/Словения.jpg") center center no-repeat;
+    background: url("../../assets/images/flags/Slovenia.jpg") center center no-repeat;
     background-size: cover;
 }
 
