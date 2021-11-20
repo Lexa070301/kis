@@ -6,9 +6,9 @@ import {form} from "../../store/AddContractForm";
 
 
 // @ts-ignore
-export const AddContractForm = observer(({form,organizations,agents, countries, clients, hotels, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract, currentCities
-                                         }) => {
-        return (
+export const AddContractForm = observer(({form, organizations, agents, countries, clients, hotels, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract, currentCities}) => {
+
+    return (
             <div className={classes.addClient__form}>
                 <form className={classes.form}>
                     <div className={classes.addClient__form__inputs}>
@@ -88,7 +88,7 @@ export const AddContractForm = observer(({form,organizations,agents, countries, 
                         </div>
                         <div>
                             <label htmlFor={form.$('endDate').id} className={"common-label"}>
-                                {form.$('endDate').label}
+                                {form.$('endDate').label}clickHandle
                             </label>
                             <input {...form.$('endDate').bind()} className={"common-input"} min="1900-01-01"
                                    max="2100-01-01"/>
@@ -106,32 +106,6 @@ export const AddContractForm = observer(({form,organizations,agents, countries, 
                             <p className={"common-error"}>{form.$('country').error}</p>
                         </div>
                         <div>
-                            <label htmlFor={form.$('cities1').id} className={"common-label select-label"}>
-                                {form.$('cities1').label}
-                            </label>
-                            <Select
-                                isMulti
-                                isSearchable
-                                isDisabled={currentCountry}
-                                options={cities}
-                                {...form.$("cities1").bind()}
-                            />
-                            <p className={"common-error"}>{form.$('cities1').error}</p>
-                        </div>
-                        <div>
-                            <label htmlFor={form.$('hotels1').id} className={"common-label select-label"}>
-                                {form.$('hotels1').label}
-                            </label>
-                            <Select
-                                isMulti
-                                isSearchable
-                                isDisabled={currentCities}
-                                options={hotels}
-                                {...form.$("hotels1").bind()}
-                            />
-                            <p className={"common-error"}>{form.$('hotels1').error}</p>
-                        </div>
-                        <div>
                             <label htmlFor={form.$('members').id} className={"common-label select-label"}>
                                 {form.$('members').label}
                             </label>
@@ -143,10 +117,53 @@ export const AddContractForm = observer(({form,organizations,agents, countries, 
                             />
                             <p className={"common-error"}>{form.$('members').error}</p>
                         </div>
-                        <div>
-                            <button onClick={()=> {
 
-                            }}>Добавить</button>
+                        {
+                            form.$('cities').map((item:any, index:any) => <div className={classes.hotel}>
+                                    <div>
+                                        <label htmlFor={item.id} className={"common-label select-label"}>
+                                            {item.label}
+                                        </label>
+                                        <Select
+                                            isSearchable
+                                            isDisabled={currentCountry}
+                                            options={cities}
+                                            {...item.bind()}
+                                        />
+                                        <p className={"common-error"}>{item.error}</p>
+                                    </div>
+                                    <div>
+                                        <label htmlFor={form.$(`hotels[hotel${index+1}]`).id} className={"common-label select-label"}>
+                                            {form.$(`hotels[hotel${index+1}]`).label}
+                                        </label>
+                                        <Select
+                                            isSearchable
+                                            isDisabled={form.$(`hotels[hotel${index+1}]`).disabled}
+                                            options={hotels}
+                                            {...form.$(`hotels[hotel${index+1}]`).bind()}
+                                        />
+                                        <p className={"common-error"}>{form.$(`hotels[hotel${index+1}]`).error}</p>
+                                    </div>
+                                    <div>
+                                        <label htmlFor={form.$(`startDates[startDate${index+1}]`).id} className={"common-label"}>
+                                            {form.$(`startDates[startDate${index+1}]`).label}
+                                        </label>
+                                        <input {...form.$(`startDates[startDate${index+1}]`).bind()} className={"common-input"} min="1900-01-01"
+                                               max="2100-01-01"/>
+                                        <p className={"common-error"}>{form.$(`startDates[startDate${index+1}]`).error}</p>
+                                    </div>
+                                    <div>
+                                        <label htmlFor={form.$(`endDates[endDate${index+1}]`).id} className={"common-label"}>
+                                            {form.$(`endDates[endDate${index+1}]`).label}
+                                        </label>
+                                        <input {...form.$(`endDates[endDate${index+1}]`).bind()} className={"common-input"} min="1900-01-01"
+                                               max="2100-01-01"/>
+                                        <p className={"common-error"}>{form.$(`endDates[endDate${index+1}]`).error}</p>
+                                    </div>
+                                </div>)
+                        }
+                        <div className={classes.addNewBtnWrap}>
+                            <button type="button" className={"common-btn"} onClick={form.onAdd}>Добавить отель</button>
                         </div>
                         <div/>
                         <button type="submit" onClick={form.onSubmit} className={"common-btn"}>

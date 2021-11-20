@@ -60,12 +60,12 @@ export const Contract = observer((props: any) => {
                     form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
                 form.$('client').set({value: contract?.ClientId, label: contract?.Client})
                 form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
-                form.$('cities1').set(Contracts.currentCities?.map(item => {
-                    return {
-                        value: item.Id,
-                        label: item.City
-                    }
-                }))
+                // form.$('cities1').set(Contracts.currentCities?.map(item => {
+                //     return {
+                //         value: item.Id,
+                //         label: item.City
+                //     }
+                // }))
                 form.$('preliminaryAgreement').set({
                     value: contract?.PreliminaryAgreementId,
                     label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
@@ -126,9 +126,9 @@ export const Contract = observer((props: any) => {
                 }
             })
 
-        if (Hotels.currentCities !== []) {
-            hotels = Hotels.getCurrentHotels()
-        }
+        // if (Hotels.currentCities !== []) {
+        //     hotels = Hotels.getCurrentHotels()
+        // }
 
         const memberList: ClientsType = toJS(Client.clients)
         let members: Array<any> | undefined = []
@@ -295,6 +295,7 @@ export const Contract = observer((props: any) => {
             selectableRows: "none",
             print: false
         }
+
 
         return (
             <div>

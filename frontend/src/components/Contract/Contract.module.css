@@ -29,3 +29,15 @@
     cursor: pointer;
     margin-right: 15px;
 }
+
+.hotel {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+    gap: 0px 20px;
+}
+
+.addNewBtnWrap {
+    margin-bottom: 20px;
+}

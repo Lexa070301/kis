@@ -9,6 +9,7 @@ import {documentsAPI} from "../api/api";
 import Contract from "./Contract";
 import Contracts from "./Contract";
 import Hotels from "./Hotels";
+import _ from 'lodash';
 
 const plugins = {
     dvr: dvr({
@@ -36,7 +37,7 @@ const organizationHandlers = {
 const countryHandlers = {
     onChange: (field) => (e) => {
         field.set(e);
-        form.$('cities1').reset()
+        form.$('cities').each((item) => item.reset())
         Cities.currentCountry = e.label
     },
 }
@@ -44,8 +45,18 @@ const countryHandlers = {
 const citiesHandlers = {
     onChange: (field) => (e) => {
         field.set(e);
-        form.$('hotels1').reset()
-        Hotels.currentCities = e.map(city => city.label)
+        const currentHotel = form.$(`hotels[hotel${Number(field.name.replace("city", ""))}]`)
+        currentHotel.reset()
+        currentHotel.update({
+            name: `hotel${Number(field.name.replace("city", ""))}`,
+            label: 'Отель',
+            disabled: false,
+            rules: 'required',
+            placeholder: 'Выберите отель',
+            output: hotel => hotel && hotel.value
+        })
+        console.log(form.$('hotels'))
+        // Hotels.currentCities = e.map(city => city.label)
     },
 }
 
@@ -121,19 +132,31 @@ const fields = [{
     placeholder: 'Выберите страну',
     output: country => country && country.value
 }, {
-    name: 'cities1',
-    label: 'Города',
+    name: 'city1',
+    label: 'Город',
     rules: 'required',
     handlers: citiesHandlers,
-    placeholder: 'Выберите города',
-    output: cities => cities && cities.map(item => toJS(item).value)
+    placeholder: 'Выберите город',
+    output: city => city && city.value
 }, {
-    name: 'hotels1',
-    label: 'Отели',
+    name: 'hotel1',
+    label: 'Отель',
     rules: 'required',
     handlers: hotelsHandlers,
-    placeholder: 'Выберите отели',
-    output: hotels => hotels && hotels.map(item => toJS(item).value)
+    placeholder: 'Выберите отель',
+    output: hotel => hotel && hotel.value
+}, {
+    name: 'startDate1',
+    label: 'Дата начала',
+    placeholder: 'Введите дату',
+    rules: 'required|size:10',
+    type: 'date',
+}, {
+    name: 'endDate1',
+    label: 'Дата окончания',
+    placeholder: 'Введите дату',
+    rules: 'required|size:10',
+    type: 'date',
 }, {
     name: 'members',
     label: 'Участники поездки',
@@ -164,12 +187,58 @@ const fields = [{
     placeholder: 'Введите дату',
     rules: 'required|size:10',
     type: 'date',
-}];
+}, {
+    name: 'cities',
+    fields: [
+        {
+            name: 'city1',
+            label: 'Город',
+            rules: 'required',
+            handlers: citiesHandlers,
+            placeholder: 'Выберите город',
+            output: city => city && city.value
+        },
+    ]
+}, {
+    name: 'hotels',
+    fields: [
+        {
+            name: 'hotel1',
+            label: 'Отель',
+            disabled: true,
+            rules: 'required',
+            placeholder: 'Выберите отель',
+            output: hotel => hotel && hotel.value
+        },
+    ]
+}, {
+    name: 'startDates',
+    fields: [
+        {
+            name: 'startDate1',
+            label: 'Дата начала',
+            placeholder: 'Введите дату',
+            rules: 'required|size:10',
+            type: 'date',
+        },
+    ]
+}, {
+    name: 'endDates',
+    fields: [
+        {
+            name: 'endDate1',
+            label: 'Дата окончания',
+            placeholder: 'Введите дату',
+            rules: 'required|size:10',
+            type: 'date',
+        },
+    ]
+},];
+
 
 const hooks = {
     onSuccess(form) {
         const cities = form.values().cities.map(item => toJS(item))
-        console.log(cities)
         try {
             documentsAPI.addPreliminaryAgreement(
                 form.values().date,
@@ -191,6 +260,48 @@ const hooks = {
         } catch (e) {
             Swal.fire('Ошибка', String(e), 'error')
         }
+    },
+    onAdd() {
+        let lastId = 0
+        form.$("cities").each((item) => lastId = Number(item.name.replace("city", "")) + 1)
+        form.$('cities').add(
+            {
+                name: 'city' + lastId,
+                label: 'Город',
+                rules: 'required',
+                handlers: citiesHandlers,
+                placeholder: 'Выберите город',
+                output: city => city && city.value
+            }
+        )
+        form.$('hotels').add(
+            {
+                name: 'hotel' + lastId,
+                label: 'Отель',
+                rules: 'required',
+                disabled: true,
+                placeholder: 'Выберите отель',
+                output: hotel => hotel && hotel.value
+            }
+        )
+        form.$('startDates').add(
+            {
+                name: 'startDate' + lastId,
+                label: 'Дата начала',
+                placeholder: 'Введите дату',
+                rules: 'required|size:10',
+                type: 'date',
+            }
+        )
+        form.$('endDates').add(
+            {
+                name: 'endDate' + lastId,
+                label: 'Дата окончания',
+                placeholder: 'Введите дату',
+                rules: 'required|size:10',
+                type: 'date',
+            }
+        )
     },
     onError(form) {
         Swal.fire('Ошибка', 'Введите корректные данные', 'error')
