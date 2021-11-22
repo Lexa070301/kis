@@ -2,11 +2,12 @@ import {observer} from "mobx-react";
 import classes from "./Contract.module.css";
 import React from "react";
 import Select from "react-select";
-import {form} from "../../store/AddContractForm";
+import {citiesHandlers, form} from "../../store/AddContractForm";
+import {HotelItemType} from "../../store/Hotels";
 
 
 // @ts-ignore
-export const AddContractForm = observer(({form, organizations, agents, countries, clients, hotels, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract, currentCities}) => {
+export const AddContractForm = observer(({form, organizations, agents, countries, clients, hotels, currentOrganization, cities, currentCountry, members, preliminaryAgreements, currentContract, hotelList}) => {
 
     return (
             <div className={classes.addClient__form}>
@@ -126,7 +127,6 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                                         </label>
                                         <Select
                                             isSearchable
-                                            isDisabled={currentCountry}
                                             options={cities}
                                             {...item.bind()}
                                         />
@@ -138,8 +138,14 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                                         </label>
                                         <Select
                                             isSearchable
-                                            isDisabled={form.$(`hotels[hotel${index+1}]`).disabled}
-                                            options={hotels}
+                                            options={hotelList.filter((hotel:HotelItemType) => {
+                                                return hotel.City === item.value?.label
+                                            }).map((hotel: HotelItemType) => {
+                                                return {
+                                                    value: hotel.Id,
+                                                    label: hotel.Hotel
+                                                }
+                                            })}
                                             {...form.$(`hotels[hotel${index+1}]`).bind()}
                                         />
                                         <p className={"common-error"}>{form.$(`hotels[hotel${index+1}]`).error}</p>
@@ -162,10 +168,57 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                                     </div>
                                 </div>)
                         }
-                        <div className={classes.addNewBtnWrap}>
-                            <button type="button" className={"common-btn"} onClick={form.onAdd}>Добавить отель</button>
+                        <div className={classes.btns}>
+                            <button type="button" className={"common-btn"} onClick={()=> {
+                                let lastId = 0
+                                form.$("cities").each((item:any) => lastId = Number(item.name.replace("city", "")) + 1)
+                                form.$('cities').add(
+                                    {
+                                        name: 'city' + lastId,
+                                        label: 'Город',
+                                        rules: 'required',
+                                        placeholder: 'Выберите город',
+                                        output: (city:any) => city && city.value
+                                    }
+                                )
+                                form.$('hotels').add(
+                                    {
+                                        name: 'hotel' + lastId,
+                                        label: 'Отель',
+                                        rules: 'required',
+                                        placeholder: 'Выберите отель',
+                                        output: (hotel:any) => hotel && hotel.value
+                                    }
+                                )
+                                form.$('startDates').add(
+                                    {
+                                        name: 'startDate' + lastId,
+                                        label: 'Дата начала',
+                                        placeholder: 'Введите дату',
+                                        rules: 'required|size:10',
+                                        type: 'date',
+                                    }
+                                )
+                                form.$('endDates').add(
+                                    {
+                                        name: 'endDate' + lastId,
+                                        label: 'Дата окончания',
+                                        placeholder: 'Введите дату',
+                                        rules: 'required|size:10',
+                                        type: 'date',
+                                    }
+                                )
+                                console.log(form.$("cities"))}}>Добавить отель</button>
+                            <button type="button" className={"common-btn"} onClick={()=> {
+                                let lastId = 0
+                                form.$("cities").each((item:any) => lastId = Number(item.name.replace("city", "")))
+                                if(lastId > 1) {
+                                    form.$(`hotels[hotel${lastId}]`).del()
+                                    form.$(`startDates[startDate${lastId}]`).del()
+                                    form.$(`endDates[endDate${lastId}]`).del()
+                                    form.$(`cities[city${lastId}]`).del()
+                                }}} disabled={!form.$('cities').has("city2")}>Удалить отель</button>
                         </div>
-                        <div/>
                         <button type="submit" onClick={form.onSubmit} className={"common-btn"}>
                             Записать
                         </button>

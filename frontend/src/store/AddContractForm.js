@@ -9,7 +9,8 @@ import {documentsAPI} from "../api/api";
 import Contract from "./Contract";
 import Contracts from "./Contract";
 import Hotels from "./Hotels";
-import _ from 'lodash';
+import makeInspectable from 'mobx-devtools-mst';
+
 
 const plugins = {
     dvr: dvr({
@@ -38,31 +39,16 @@ const countryHandlers = {
     onChange: (field) => (e) => {
         field.set(e);
         form.$('cities').each((item) => item.reset())
+        form.$('hotels').each((item) => item.reset())
         Cities.currentCountry = e.label
     },
 }
 
-const citiesHandlers = {
+export const citiesHandlers = {
     onChange: (field) => (e) => {
         field.set(e);
         const currentHotel = form.$(`hotels[hotel${Number(field.name.replace("city", ""))}]`)
         currentHotel.reset()
-        currentHotel.update({
-            name: `hotel${Number(field.name.replace("city", ""))}`,
-            label: 'Отель',
-            disabled: false,
-            rules: 'required',
-            placeholder: 'Выберите отель',
-            output: hotel => hotel && hotel.value
-        })
-        console.log(form.$('hotels'))
-        // Hotels.currentCities = e.map(city => city.label)
-    },
-}
-
-const hotelsHandlers = {
-    onChange: (field) => (e) => {
-        field.set(e);
     },
 }
 
@@ -70,8 +56,8 @@ const contractHandlers = {
     onChange: (field) => async (e) => {
         field.set(e);
         await Contract.setCurrentContract(e.value)
-
         const contract = Contracts.currentContract
+
         form.$('membersCount').set(contract?.MembersCount)
         form.$('startDate').set(contract?.StartDate)
         form.$('endDate').set(contract?.EndDate)
@@ -84,7 +70,54 @@ const contractHandlers = {
         else
             form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
         form.$('client').set({value: contract?.ClientId, label: contract?.Client})
-        form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
+        if(Contracts.currentCountry.id) {
+            form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
+            if (Contracts.currentCountry.Name !== null) {
+                Cities.currentCountry = Contracts.currentCountry.Name
+            }
+            form.$('cities').reset()
+            Contracts.currentCities?.forEach((item, index) => {
+                let number = index + 1
+                form.$('cities').add(
+                    {
+                        name: 'city' + number,
+                        label: 'Город',
+                        rules: 'required',
+                        handlers: citiesHandlers,
+                        placeholder: 'Выберите город',
+                        output: (city) => city && city.value
+                    }
+                )
+                form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
+                form.$('hotels').add(
+                    {
+                        name: 'hotel' + number,
+                        label: 'Отель',
+                        rules: 'required',
+                        placeholder: 'Выберите отель',
+                        output: (hotel) => hotel && hotel.value
+                    }
+                )
+                form.$('startDates').add(
+                    {
+                        name: 'startDate' + number,
+                        label: 'Дата начала',
+                        placeholder: 'Введите дату',
+                        rules: 'required|size:10',
+                        type: 'date',
+                    }
+                )
+                form.$('endDates').add(
+                    {
+                        name: 'endDate' + number,
+                        label: 'Дата окончания',
+                        placeholder: 'Введите дату',
+                        rules: 'required|size:10',
+                        type: 'date',
+                    }
+                )
+            })
+        }
         form.$('preliminaryAgreement').set({
             value: contract?.PreliminaryAgreementId,
             label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
@@ -132,20 +165,6 @@ const fields = [{
     placeholder: 'Выберите страну',
     output: country => country && country.value
 }, {
-    name: 'city1',
-    label: 'Город',
-    rules: 'required',
-    handlers: citiesHandlers,
-    placeholder: 'Выберите город',
-    output: city => city && city.value
-}, {
-    name: 'hotel1',
-    label: 'Отель',
-    rules: 'required',
-    handlers: hotelsHandlers,
-    placeholder: 'Выберите отель',
-    output: hotel => hotel && hotel.value
-}, {
     name: 'startDate1',
     label: 'Дата начала',
     placeholder: 'Введите дату',
@@ -189,50 +208,16 @@ const fields = [{
     type: 'date',
 }, {
     name: 'cities',
-    fields: [
-        {
-            name: 'city1',
-            label: 'Город',
-            rules: 'required',
-            handlers: citiesHandlers,
-            placeholder: 'Выберите город',
-            output: city => city && city.value
-        },
-    ]
+    fields: []
 }, {
     name: 'hotels',
-    fields: [
-        {
-            name: 'hotel1',
-            label: 'Отель',
-            disabled: true,
-            rules: 'required',
-            placeholder: 'Выберите отель',
-            output: hotel => hotel && hotel.value
-        },
-    ]
+    fields: []
 }, {
     name: 'startDates',
-    fields: [
-        {
-            name: 'startDate1',
-            label: 'Дата начала',
-            placeholder: 'Введите дату',
-            rules: 'required|size:10',
-            type: 'date',
-        },
-    ]
+    fields: []
 }, {
     name: 'endDates',
-    fields: [
-        {
-            name: 'endDate1',
-            label: 'Дата окончания',
-            placeholder: 'Введите дату',
-            rules: 'required|size:10',
-            type: 'date',
-        },
-    ]
+    fields: []
 },];
 
 
@@ -261,51 +246,13 @@ const hooks = {
             Swal.fire('Ошибка', String(e), 'error')
         }
     },
-    onAdd() {
-        let lastId = 0
-        form.$("cities").each((item) => lastId = Number(item.name.replace("city", "")) + 1)
-        form.$('cities').add(
-            {
-                name: 'city' + lastId,
-                label: 'Город',
-                rules: 'required',
-                handlers: citiesHandlers,
-                placeholder: 'Выберите город',
-                output: city => city && city.value
-            }
-        )
-        form.$('hotels').add(
-            {
-                name: 'hotel' + lastId,
-                label: 'Отель',
-                rules: 'required',
-                disabled: true,
-                placeholder: 'Выберите отель',
-                output: hotel => hotel && hotel.value
-            }
-        )
-        form.$('startDates').add(
-            {
-                name: 'startDate' + lastId,
-                label: 'Дата начала',
-                placeholder: 'Введите дату',
-                rules: 'required|size:10',
-                type: 'date',
-            }
-        )
-        form.$('endDates').add(
-            {
-                name: 'endDate' + lastId,
-                label: 'Дата окончания',
-                placeholder: 'Введите дату',
-                rules: 'required|size:10',
-                type: 'date',
-            }
-        )
-    },
     onError(form) {
         Swal.fire('Ошибка', 'Введите корректные данные', 'error')
     }
 }
 
 export const form = new MobxReactForm({fields}, {plugins, hooks});
+
+// const myStore = form.create(/* ... */);
+//
+// makeInspectable(myStore);

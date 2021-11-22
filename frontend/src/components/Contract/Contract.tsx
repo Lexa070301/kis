@@ -6,7 +6,7 @@ import React, {FC, useEffect, useState} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
 import Client, {ClientItemType, ClientsType} from "../../store/Clients";
 import Contracts from "../../store/Contract";
-import {form} from "../../store/AddContractForm";
+import {citiesHandlers, form} from "../../store/AddContractForm";
 import {AddContractForm} from "./AddContractForm";
 import Org, {OrganisationItemType, OrganisationsType} from "../../store/Organisations";
 import Agents, {AgentsItemType, AgentsType} from "../../store/Agents";
@@ -45,8 +45,8 @@ export const Contract = observer((props: any) => {
                 await Hotels.loadHotels()
             if (Contracts.currentAgreement !== '') {
                 await Contracts.setCurrentContract(Number(Contracts.currentAgreement))
-
                 const contract = Contracts.currentContract
+
                 form.$('membersCount').set(contract?.MembersCount)
                 form.$('startDate').set(contract?.StartDate)
                 form.$('endDate').set(contract?.EndDate)
@@ -59,13 +59,53 @@ export const Contract = observer((props: any) => {
                 else
                     form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
                 form.$('client').set({value: contract?.ClientId, label: contract?.Client})
-                form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
-                // form.$('cities1').set(Contracts.currentCities?.map(item => {
-                //     return {
-                //         value: item.Id,
-                //         label: item.City
-                //     }
-                // }))
+                if(Contracts.currentCountry.id) {
+                    form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
+                    if (Contracts.currentCountry.Name !== null) {
+                        Cities.currentCountry = Contracts.currentCountry.Name
+                    }
+                    Contracts.currentCities?.forEach((item, index) => {
+                        let number = index + 1
+                        form.$('cities').add(
+                            {
+                                name: 'city' + number,
+                                label: 'Город',
+                                rules: 'required',
+                                handlers: citiesHandlers,
+                                placeholder: 'Выберите город',
+                                output: (city:any) => city && city.value
+                            }
+                        )
+                        form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
+                        form.$('hotels').add(
+                            {
+                                name: 'hotel' + number,
+                                label: 'Отель',
+                                rules: 'required',
+                                placeholder: 'Выберите отель',
+                                output: (hotel:any) => hotel && hotel.value
+                            }
+                        )
+                        form.$('startDates').add(
+                            {
+                                name: 'startDate' + number,
+                                label: 'Дата начала',
+                                placeholder: 'Введите дату',
+                                rules: 'required|size:10',
+                                type: 'date',
+                            }
+                        )
+                        form.$('endDates').add(
+                            {
+                                name: 'endDate' + number,
+                                label: 'Дата окончания',
+                                placeholder: 'Введите дату',
+                                rules: 'required|size:10',
+                                type: 'date',
+                            }
+                        )
+                    })
+                }
                 form.$('preliminaryAgreement').set({
                     value: contract?.PreliminaryAgreementId,
                     label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
@@ -126,9 +166,6 @@ export const Contract = observer((props: any) => {
                 }
             })
 
-        // if (Hotels.currentCities !== []) {
-        //     hotels = Hotels.getCurrentHotels()
-        // }
 
         const memberList: ClientsType = toJS(Client.clients)
         let members: Array<any> | undefined = []
@@ -309,12 +346,12 @@ export const Contract = observer((props: any) => {
                         clients={clients}
                         cities={cities}
                         hotels={hotels}
+                        hotelList={hotelList}
                         members={members}
                         preliminaryAgreements={preliminaryAgreements}
                         currentContract={Boolean(Contracts.currentAgreement === '')}
                         currentOrganization={Boolean(Agents.currentOrganization === '')}
                         currentCountry={Boolean(Cities.currentCountry === '')}
-                        currentCities={Boolean(Hotels.currentCities.length === 0)}
                     />}
                     <MUIDataTable
                         title={"Список Договоров"}

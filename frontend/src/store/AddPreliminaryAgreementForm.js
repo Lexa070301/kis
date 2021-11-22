@@ -34,7 +34,7 @@ const countryHandlers = {
   onChange: (field) => (e) => {
     field.set(e);
     form.$('cities').reset()
-    Cities.currentCity = e.label
+    Cities.currentCountry = e.label
   },
 }
 

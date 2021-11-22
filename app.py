@@ -24,7 +24,6 @@ app.config['JWT_SECRET_KEY'] = 'fj234%$@ptj\34j\4390Q%)%ufv=19414_@*231i)(&0r-'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1000
 mysql.init_app(app)
-conn = mysql.connect()
 default_path = '/api/'
 
 jwt = JWTManager(app)
@@ -37,11 +36,13 @@ def allowed_file(filename):
 
 
 def query_db(query, add=[], args=(), one=False):
+    conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute(query, args)
     r = [dict((cursor.description[i][0], value) \
               for i, value in enumerate(row)) for row in cursor.fetchall()]
     cursor.close()
+    conn.commit()
     result = (r[0] if r else None) if one else r
     if add != []:
         result += add
@@ -112,6 +113,7 @@ def employees():
         organization = str(request.json["organization"])
         position = str(request.json["position"])
         date_of_birth = str(request.json["dateOfBirth"])
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", NULL, "' + email + '", "' + password + '", "' + position + '", "' + organization + '");')
@@ -133,6 +135,7 @@ def employees():
                 image_path = os.path.join(app.config['UPLOAD_FOLDER'] + "employees",
                                           "avatar_" + employeeId + "_" + filename)
                 file.save(image_path)
+                conn = mysql.connect()
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE Employee SET PhotoLink = "' + image_path + '" WHERE id = ' + employeeId + ';')
@@ -152,6 +155,7 @@ def employee():
         organization = str(request.json["organization"])
         position = str(request.json["position"])
         date_of_birth = str(request.json["dateOfBirth"])
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'UPDATE Employee SET Name = "' + name + '", FullName = "' + fullname + '", DateOfBirth = "' + date_of_birth + '", Email = "' + email + '", Position_id = "' + position + '", Organisation_id = "' + organization + '" WHERE id = "' + id + '";')
@@ -166,6 +170,7 @@ def employee():
 
     if request.method == 'DELETE':
         id = request.args.get('id')
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'DELETE FROM Employee WHERE id = "' + id + '";')
@@ -177,6 +182,7 @@ def employee():
 @app.route(default_path + 'auth/login', methods=['POST'])
 def login():
     if request.method == 'POST':
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute('SELECT Password, id FROM Employee WHERE Email = "' + str(request.json['email']) + '";')
         data = cursor.fetchone()
@@ -313,6 +319,7 @@ def clients():
         issued_at = str(request.json["issuedAt"])
         sex = str(request.json["sex"])
         status = str(request.json["status"])
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) \
@@ -369,6 +376,7 @@ def preliminary_agreements():
         organization = str(request.json["Organization"])
         client = str(request.json["Client"])
         cities = list(request.json["Cities"])
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO `PreliminaryAgreement` (`id`, `Date`, `Number`, `StartDate`, `EndDate`, `MembersCount`, `Status`, `Employee_id`, `Organisation_id`, `User_id`) \
@@ -440,6 +448,7 @@ def contracts():
         organization = str(request.json["Organization"])
         client = str(request.json["Client"])
         cities = list(request.json["Cities"])
+        conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO `PreliminaryAgreement` (`id`, `Date`, `Number`, `StartDate`, `EndDate`, `MembersCount`, `Employee_id`, `Organisation_id`, `User_id`) \
