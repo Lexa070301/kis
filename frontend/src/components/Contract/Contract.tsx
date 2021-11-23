@@ -66,17 +66,6 @@ export const Contract = observer((props: any) => {
                     }
                     Contracts.currentCities?.forEach((item, index) => {
                         let number = index + 1
-                        form.$('cities').add(
-                            {
-                                name: 'city' + number,
-                                label: 'Город',
-                                rules: 'required',
-                                handlers: citiesHandlers,
-                                placeholder: 'Выберите город',
-                                output: (city:any) => city && city.value
-                            }
-                        )
-                        form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
                         form.$('hotels').add(
                             {
                                 name: 'hotel' + number,
@@ -104,6 +93,17 @@ export const Contract = observer((props: any) => {
                                 type: 'date',
                             }
                         )
+                        form.$('cities').add(
+                            {
+                                name: 'city' + number,
+                                label: 'Город',
+                                rules: 'required',
+                                handlers: citiesHandlers,
+                                placeholder: 'Выберите город',
+                                output: (city:any) => city && city.value
+                            }
+                        )
+                        form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
                     })
                 }
                 form.$('preliminaryAgreement').set({

@@ -208,7 +208,7 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                                         type: 'date',
                                     }
                                 )
-                                console.log(form.$("cities"))}}>Добавить отель</button>
+                                }}>Добавить отель</button>
                             <button type="button" className={"common-btn"} onClick={()=> {
                                 let lastId = 0
                                 form.$("cities").each((item:any) => lastId = Number(item.name.replace("city", "")))

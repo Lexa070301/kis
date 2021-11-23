@@ -70,25 +70,24 @@ const contractHandlers = {
         else
             form.$('agent').set({value: contract?.EmployeeId, label: contract?.Employee})
         form.$('client').set({value: contract?.ClientId, label: contract?.Client})
-        if(Contracts.currentCountry.id) {
+        if (Contracts.currentCountry.id) {
             form.$('country').set({value: Contracts.currentCountry.id, label: Contracts.currentCountry.Name})
             if (Contracts.currentCountry.Name !== null) {
                 Cities.currentCountry = Contracts.currentCountry.Name
             }
-            form.$('cities').reset()
+            // form.$('cities').each((item, index) => {
+            //     let number = index + 1
+            //     form.$(`cities[city${number}]`).del()
+            //     form.$(`hotels[hotel${number}]`).del()
+            //     form.$(`startDates[startDate${number}]`).del()
+            //     form.$(`endDates[endDate${number}]`).del()
+            // })
+            form.$(`cities`).reset()
+            form.$(`hotels`).reset()
+            form.$(`startDates`).reset()
+            form.$(`endDates`).reset()
             Contracts.currentCities?.forEach((item, index) => {
                 let number = index + 1
-                form.$('cities').add(
-                    {
-                        name: 'city' + number,
-                        label: 'Город',
-                        rules: 'required',
-                        handlers: citiesHandlers,
-                        placeholder: 'Выберите город',
-                        output: (city) => city && city.value
-                    }
-                )
-                form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
                 form.$('hotels').add(
                     {
                         name: 'hotel' + number,
@@ -116,6 +115,17 @@ const contractHandlers = {
                         type: 'date',
                     }
                 )
+                form.$('cities').add(
+                    {
+                        name: 'city' + number,
+                        label: 'Город',
+                        rules: 'required',
+                        handlers: citiesHandlers,
+                        placeholder: 'Выберите город',
+                        output: (city) => city && city.value
+                    }
+                )
+                form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
             })
         }
         form.$('preliminaryAgreement').set({
@@ -164,18 +174,6 @@ const fields = [{
     handlers: countryHandlers,
     placeholder: 'Выберите страну',
     output: country => country && country.value
-}, {
-    name: 'startDate1',
-    label: 'Дата начала',
-    placeholder: 'Введите дату',
-    rules: 'required|size:10',
-    type: 'date',
-}, {
-    name: 'endDate1',
-    label: 'Дата окончания',
-    placeholder: 'Введите дату',
-    rules: 'required|size:10',
-    type: 'date',
 }, {
     name: 'members',
     label: 'Участники поездки',
@@ -251,8 +249,8 @@ const hooks = {
     }
 }
 
-export const form = new MobxReactForm({fields}, {plugins, hooks});
-
-// const myStore = form.create(/* ... */);
-//
-// makeInspectable(myStore);
+export const form = new MobxReactForm({fields}, {
+    plugins,
+    hooks,
+    options: {validateOnBlur: false, validateOnChange: true}
+});
