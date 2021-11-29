@@ -298,7 +298,7 @@ export const Contract = observer((props: any) => {
 
 
         const data = Contracts.contracts ?
-            Contracts.contracts.map(item => {
+            Contracts.contracts.filter((item) => item.Status === "active" || item.Status === "closed").map(item => {
                 let status = ""
                 switch (item.Status) {
                     case "open":

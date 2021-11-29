@@ -8,8 +8,6 @@ import Cities from "./Cities";
 import {documentsAPI} from "../api/api";
 import Contract from "./Contract";
 import Contracts from "./Contract";
-import Hotels from "./Hotels";
-import makeInspectable from 'mobx-devtools-mst';
 
 
 const plugins = {
@@ -75,13 +73,6 @@ const contractHandlers = {
             if (Contracts.currentCountry.Name !== null) {
                 Cities.currentCountry = Contracts.currentCountry.Name
             }
-            // form.$('cities').each((item, index) => {
-            //     let number = index + 1
-            //     form.$(`cities[city${number}]`).del()
-            //     form.$(`hotels[hotel${number}]`).del()
-            //     form.$(`startDates[startDate${number}]`).del()
-            //     form.$(`endDates[endDate${number}]`).del()
-            // })
             form.$(`cities`).reset()
             form.$(`hotels`).reset()
             form.$(`startDates`).reset()
@@ -128,6 +119,11 @@ const contractHandlers = {
                 form.$(`cities[city${number}]`).set({value: item.Id, label: item.City})
             })
         }
+        form.$(`cities`).each((item, index) => {
+            if (!item.value) {
+                item.del()
+            }
+        })
         form.$('preliminaryAgreement').set({
             value: contract?.PreliminaryAgreementId,
             label: "№ " + contract?.PreliminaryAgreement + " от " + contract?.PreliminaryAgreementDate
@@ -193,6 +189,12 @@ const fields = [{
     rules: 'required|numeric',
     type: 'text'
 }, {
+    name: 'sum',
+    label: 'Сумма',
+    placeholder: 'Сумма',
+    rules: 'required|numeric',
+    type: 'text'
+}, {
     name: 'startDate',
     label: 'Дата начала',
     placeholder: 'Введите дату',
@@ -221,9 +223,15 @@ const fields = [{
 
 const hooks = {
     onSuccess(form) {
-        const cities = form.values().cities.map(item => toJS(item))
+        const hotels = Object.values(form.values().hotels).map((item, index)=> {
+            return {
+                hotel: item,
+                startDate: Object.values(form.values().startDates)[index],
+                endDate: Object.values(form.values().endDates)[index]
+            }
+        })
         try {
-            documentsAPI.addPreliminaryAgreement(
+            documentsAPI.addContract(
                 form.values().date,
                 form.values().number,
                 form.values().startDate,
@@ -231,8 +239,11 @@ const hooks = {
                 form.values().membersCount,
                 form.values().agent,
                 form.values().organization,
+                form.values().preliminaryAgreement,
                 form.values().client,
-                form.values().cities,
+                form.values().sum,
+                form.values().members,
+                hotels,
             ).then(response => {
                 if (response !== "error") {
                     Swal.fire('Success', 'Предварительное соглашение успешно добавлено', 'success')

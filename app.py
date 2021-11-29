@@ -441,27 +441,39 @@ def contracts():
         start_date = str(request.json["StartDate"])
         end_date = str(request.json["EndDate"])
         members_count = str(request.json["MembersCount"])
-        if "Employee" in request.json:
-            employee = str(request.json["Employee"])
+        if "agent" in request.json:
+            employee = '"' + str(request.json["Agent"]) + '"'
         else:
-            employee = ''
+            employee = 'NULL'
         organization = str(request.json["Organization"])
+        preliminary_agreement = str(request.json["PreliminaryAgreement"])
         client = str(request.json["Client"])
-        cities = list(request.json["Cities"])
+        members = list(request.json["Members"])
+        sum = str(request.json["Sum"])
+        hotels = list(request.json["Hotels"])
+        status = str(request.json["Status"])
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO `PreliminaryAgreement` (`id`, `Date`, `Number`, `StartDate`, `EndDate`, `MembersCount`, `Employee_id`, `Organisation_id`, `User_id`) \
-            VALUES (NULL, "' + date + '", "' + number + '", "' + start_date + '", "' + end_date + '", "' + members_count + '", "' + employee + '", "' + organization + '", "' + client + '");')
-        cursor.execute(
-            'SELECT LAST_INSERT_ID() AS lastId;')
-        preliminary_agreement_id = str(cursor.fetchall()[0][0])
+        cursor.execute('UPDATE Contract SET Date = "' + date + '", Number = "' + number + '", StartDate = "' + start_date +
+                       '", EndDate = "' + end_date + '", Sum = "' + sum + '", Status = "' + status +
+                       '", MembersCount = "' + members_count + '", Organisation_id = "' + organization +
+                       '", Employee_id = ' + employee + ' WHERE PreliminaryAgreement_id = "' + preliminary_agreement + '";')
+        cursor.execute('UPDATE PreliminaryAgreement SET User_id = "' + client + '" WHERE id = "' + preliminary_agreement + '";')
+        cursor.execute('SELECT id FROM Contract WHERE PreliminaryAgreement_id = "' + preliminary_agreement + '"')
+        contract_id = str(cursor.fetchall()[0][0])
 
         i = 0
-        for item in cities:
+        for item in members:
             cursor.execute(
-                'INSERT INTO `CityToVisit` (id, CityToVisit.Order, 	PreliminaryAgreement_id, City_id) \
-                VALUES (NULL, "' + str(i) + '", "' + str(preliminary_agreement_id) + '", "' + str(item) + '");')
+                'INSERT INTO `Members` (`id`, `Contract_id`, `User_id`) VALUES\
+                 (NULL, "' + str(contract_id) + '", "' + str(item) + '");')
+            i += 1
+
+        i = 0
+        for item in hotels:
+            cursor.execute(
+                'INSERT INTO `HotelToVisit` (`id`, `Order`, `StartDate`, `EndDate`, `Contract_id`, `Hotel_id`) VALUES\
+                 (NULL, "' + str(i) + '", "' + str(item['startDate']) + '", "' + str(item['endDate']) + '", "' + str(contract_id) + '", "' + str(item['hotel']) + '");')
             i += 1
 
         cursor.close()

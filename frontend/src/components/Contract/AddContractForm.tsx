@@ -118,6 +118,13 @@ export const AddContractForm = observer(({form, organizations, agents, countries
                             />
                             <p className={"common-error"}>{form.$('members').error}</p>
                         </div>
+                        <div>
+                            <label htmlFor={form.$('sum').id} className={"common-label"}>
+                                {form.$('sum').label}
+                            </label>
+                            <input {...form.$('sum').bind()} className={"common-input"}/>
+                            <p className={"common-error"}>{form.$('sum').error}</p>
+                        </div>
 
                         {
                             form.$('cities').map((item:any, index:any) => <div className={classes.hotel}>

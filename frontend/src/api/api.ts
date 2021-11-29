@@ -218,4 +218,37 @@ export const documentsAPI = {
         Contract.loadContracts()
         return response
     },
+    async addContract(
+        Date: String,
+        Number: Number,
+        StartDate: String,
+        EndDate: String,
+        MembersCount: Number,
+        Agent: Number,
+        Organization: Number,
+        PreliminaryAgreement_id: Number,
+        Client: Number,
+        Sum: Number,
+        Members: Array<number>,
+        Hotels: Array<object>
+    ) {
+        const response = await instance.post(`contracts`, {
+            Date,
+            Number,
+            StartDate,
+            EndDate,
+            MembersCount,
+            Agent,
+            Organization,
+            PreliminaryAgreement: PreliminaryAgreement_id,
+            Client,
+            Sum,
+            Members,
+            Hotels,
+            Status: "active"
+        })
+        PreliminaryAgreement.loadPreliminaryAgreements()
+        Contract.loadContracts()
+        return response
+    },
 }
