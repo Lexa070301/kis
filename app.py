@@ -321,15 +321,18 @@ def clients():
         status = str(request.json["status"])
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) \
-            VALUES (NULL, "' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date + '", "' + issued_at + '");')
-        cursor.execute(
-            'SELECT LAST_INSERT_ID() AS lastId;')
-        passport_id = str(cursor.fetchall()[0][0])
-        cursor.execute(
-            'INSERT INTO `User` (id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status_id, Passport_id) \
-            VALUES (NULL, "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth + '", "' + place_of_birth + '", "' + status + '", "' + passport_id + '");')
+        cursor.execute(' CALL `spAddClient`("' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date
+                       + '", "' + issued_at + '", "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth
+                       + '", "' + place_of_birth + '", "' + status + '", @passport_id);')
+        #cursor.execute(
+            #'INSERT INTO `Passport` (`id`, `Series`, `Number`, `IssuanceDate`, `EndDate`, `IssuedAt`) \
+            #VALUES (NULL, "' + series + '", "' + number + '", "' + issuance_date + '", "' + end_date + '", "' + issued_at + '");')
+        #cursor.execute(
+            #'SELECT LAST_INSERT_ID() AS lastId;')
+        #passport_id = str(cursor.fetchall()[0][0])
+        #cursor.execute(
+            #'INSERT INTO `User` (id, Name, FullName, Sex, DateOfBirth, PlaceOfBirth, Status_id, Passport_id) \
+            #VALUES (NULL, "' + name + '", "' + fullname + '", "' + sex + '", "' + date_of_birth + '", "' + place_of_birth + '", "' + status + '", "' + passport_id + '");')
         cursor.close()
         conn.commit()
         response = app.response_class(
@@ -344,20 +347,21 @@ def clients():
 def preliminary_agreements():
     if request.method == 'GET':
         response = app.response_class(
-            response=query_db('SELECT PreliminaryAgreement.Date AS Date, '
-                              'PreliminaryAgreement.id AS Id, '
-                              'PreliminaryAgreement.Number AS Number, '
-                              'PreliminaryAgreement.StartDate AS StartDate, '
-                              'PreliminaryAgreement.EndDate AS EndDate, '
-                              'PreliminaryAgreement.MembersCount AS MembersCount, '
-                              'PreliminaryAgreement.Status AS Status, '
-                              'Employee.Name AS Employee, '
-                              'Organisation.Title AS Organization, '
-                              'User.FullName AS Client '
-                              'FROM PreliminaryAgreement '
-                              'LEFT JOIN Employee ON PreliminaryAgreement.Employee_id = Employee.id '
-                              'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
-                              'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
+            response=query_db('CALL spGetAgreements();'),
+            # response=query_db('SELECT PreliminaryAgreement.Date AS Date, '
+            #                   'PreliminaryAgreement.id AS Id, '
+            #                   'PreliminaryAgreement.Number AS Number, '
+            #                   'PreliminaryAgreement.StartDate AS StartDate, '
+            #                   'PreliminaryAgreement.EndDate AS EndDate, '
+            #                   'PreliminaryAgreement.MembersCount AS MembersCount, '
+            #                   'PreliminaryAgreement.Status AS Status, '
+            #                   'Employee.Name AS Employee, '
+            #                   'Organisation.Title AS Organization, '
+            #                   'User.FullName AS Client '
+            #                   'FROM PreliminaryAgreement '
+            #                   'LEFT JOIN Employee ON PreliminaryAgreement.Employee_id = Employee.id '
+            #                   'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+            #                   'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
             status=200,
             mimetype='application/json'
         )
