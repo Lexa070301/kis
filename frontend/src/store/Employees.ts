@@ -9,6 +9,7 @@ export type EmployeeItemType = {
     Email: string
     Office: string
     Position: string
+    PhotoLink: string
 }
 
 export type EmployeesType = Array<EmployeeItemType> | null

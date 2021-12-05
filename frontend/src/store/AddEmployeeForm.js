@@ -86,6 +86,7 @@ const hooks = {
             form.$('photo').files[0]
         ).then(response => {
           if (response !== "error") {
+            form.reset()
             Swal.fire('Success', 'Сотрудник успешно добавлен', 'success')
           } else {
             Swal.fire('Ошибка', 'Что-то пошло не так', 'error')
@@ -102,6 +103,7 @@ const hooks = {
             form.values().position,
         ).then(response => {
           if (response !== "error") {
+            form.reset()
             Swal.fire('Success', 'Сотрудник успешно добавлен', 'success')
           } else {
             Swal.fire('Ошибка', 'Что-то пошло не так', 'error')

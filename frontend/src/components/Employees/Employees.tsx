@@ -21,9 +21,11 @@ import {download, rootURL, usersAPI} from "../../api/api";
 import EditIcon from "../../assets/images/icons/edit.svg";
 import DownloadIcon from "../../assets/images/icons/download.svg";
 import DeleteIcon from "../../assets/images/icons/delete.svg";
+import Upload from "../../assets/images/icons/upload.svg";
+import ViewIcon from "../../assets/images/icons/list.svg";
+
 import {Loader} from "../common/Loader/Loader";
 import Modal from 'react-modal';
-import Upload from "../../assets/images/icons/upload.svg";
 
 
 type CellValueType = string | number | readonly string[] | undefined
@@ -32,17 +34,18 @@ export const Employees = observer(() => {
 
     const [render, setRender] = useState(false)
     const [isOpen, setIsOpen] = useState(false);
-    // const [editFormData, setEditFormData] = useState({
-    //     name: "",
-    //     fullName: "",
-    //     date: "",
-    //     email: "",
-    //     organization: {value: "", label: ""},
-    //     position: {value: "", label: ""},
-    // });
-    // const [modalIsOpen, setModalIsOpen] = useState(false);
-    // const [rowId, setRowId] = useState(0);
-    // const [selectedImage, setSelectedImage] = useState();
+    const [editFormData, setEditFormData] = useState({
+        name: "",
+        fullName: "",
+        date: "",
+        email: "",
+        organization: {value: "", label: ""},
+        position: {value: "", label: ""},
+        photoLink: ""
+    });
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [rowId, setRowId] = useState(0);
+    const [selectedImage, setSelectedImage] = useState();
 
     // const imageChange = (e: any) => {
     //     if (e.target.files && e.target.files.length > 0) {
@@ -142,23 +145,24 @@ export const Employees = observer(() => {
                         <>
                             {
                                 <>
-                                    {/*<img src={EditIcon} alt="Edit" className={classes.editEmployee} onClick={() => {*/}
-                                    {/*    setEditFormData({*/}
-                                    {/*        name: tableMeta.rowData[0],*/}
-                                    {/*        fullName: tableMeta.rowData[1],*/}
-                                    {/*        date: tableMeta.rowData[2],*/}
-                                    {/*        email: tableMeta.rowData[3],*/}
-                                    {/*        organization: organizations.filter((item) => item.label === tableMeta.rowData[4])[0],*/}
-                                    {/*        position: positions.filter((item) => item.label === tableMeta.rowData[5])[0],*/}
-                                    {/*        photoLink: tableMeta.rowData[6]*/}
-                                    {/*    })*/}
-                                    {/*    setRowId(tableMeta.rowData[tableMeta.rowData.length - 1])*/}
-                                    {/*    openModal()*/}
-                                    {/*}}/>*/}
+                                    <img src={ViewIcon} alt="Edit" className={classes.editEmployee} onClick={() => {
+                                        console.log(tableMeta.rowData[7])
+                                        setEditFormData({
+                                            name: tableMeta.rowData[0],
+                                            fullName: tableMeta.rowData[1],
+                                            date: tableMeta.rowData[2],
+                                            email: tableMeta.rowData[3],
+                                            organization: organizations.filter((item) => item.label === tableMeta.rowData[4])[0],
+                                            position: positions.filter((item) => item.label === tableMeta.rowData[5])[0],
+                                            photoLink: tableMeta.rowData[7]
+                                        })
+                                        setRowId(tableMeta.rowData[tableMeta.rowData.length - 1])
+                                        openModal()
+                                    }}/>
                                     <img src={DeleteIcon} alt="Edit" className={classes.editEmployee}
                                          onClick={() => {
                                              try {
-                                                 usersAPI.deleteEmployee(tableMeta.rowData[tableMeta.rowData.length - 1]).then(response => {
+                                                 usersAPI.deleteEmployee(tableMeta.rowData[6]).then(response => {
                                                      if (response !== "error") {
                                                          Swal.fire('Success', 'Сотрудник успешно удалён', 'success')
                                                      } else {
@@ -174,11 +178,17 @@ export const Employees = observer(() => {
                         </>
                     )
                 }
-            }
+            },
+            {
+                name: "photo",
+                options: {
+                    display: false,
+                }
+            },
         ];
 
         const data = EmployeesInstance.employees ?
-            EmployeesInstance.employees.map(item => [item.Name, item.FullName, item.DateOfBirth, item.Email, item.Office, item.Position, item.id]) : [[""]]
+            EmployeesInstance.employees.map(item => [item.Name, item.FullName, item.DateOfBirth, item.Email, item.Office, item.Position, item.id, item.PhotoLink]) : [[""]]
 
         let options: MUIDataTableOptions = {
             pagination: true,
@@ -187,30 +197,30 @@ export const Employees = observer(() => {
             rowsPerPageOptions: [5, 10, 15, 20, 25]
         }
 
-        // const afterOpenModal = () => {
-        //     console.log(rootURL + editFormData.photoLink.slice(1))
-        // };
-        //
-        // const openModal = () => {
-        //     setModalIsOpen(true)
-        // };
-        //
-        // const closeModal = () => {
-        //     setModalIsOpen(false)
-        // };
-        //
-        // const customStyles = {
-        //     content: {
-        //         top: '50%',
-        //         left: '50%',
-        //         right: 'auto',
-        //         bottom: 'auto',
-        //         marginRight: '-50%',
-        //         transform: 'translate(-50%, -50%)',
-        //         width: '95%',
-        //         maxWidth: '1000px'
-        //     },
-        // };
+        const afterOpenModal = () => {
+            console.log(rootURL + editFormData.photoLink.slice(1))
+        };
+
+        const openModal = () => {
+            setModalIsOpen(true)
+        };
+
+        const closeModal = () => {
+            setModalIsOpen(false)
+        };
+
+        const customStyles = {
+            content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
+                width: '95%',
+                maxWidth: '1000px'
+            },
+        };
 
 
         // @ts-ignore
@@ -222,137 +232,162 @@ export const Employees = observer(() => {
                 }}>
                     Новый сотрудник
                 </button>
-                {/*<Modal*/}
-                {/*    isOpen={modalIsOpen}*/}
-                {/*    onAfterOpen={afterOpenModal}*/}
-                {/*    onRequestClose={closeModal}*/}
-                {/*    style={customStyles}*/}
-                {/*>*/}
-                {/*    <Title text={"Редактировать"}/>*/}
-                {/*    <button className={classes.closeModal} onClick={closeModal}>X</button>*/}
-                {/*    <form className={classes.form}>*/}
-                {/*        <div className={classes.editEmployee__form__inputs}>*/}
-                {/*            <div>*/}
-                {/*                <input type="text" value={editFormData.name} className={"common-input"}*/}
-                {/*                       onChange={(e) => {*/}
-                {/*                           setEditFormData({*/}
-                {/*                               ...editFormData,*/}
-                {/*                               name: e.target.value*/}
-                {/*                           })*/}
-                {/*                       }}/>*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <input type="text" value={editFormData.fullName} className={"common-input"}*/}
-                {/*                       onChange={(e) => {*/}
-                {/*                           setEditFormData({*/}
-                {/*                               ...editFormData,*/}
-                {/*                               fullName: e.target.value*/}
-                {/*                           })*/}
-                {/*                       }}/>*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <input type="date" value={editFormData.date?.toString()} className={"common-input"}*/}
-                {/*                       onChange={(e) => {*/}
-                {/*                           setEditFormData({*/}
-                {/*                               ...editFormData,*/}
-                {/*                               date: e.target.value*/}
-                {/*                           })*/}
-                {/*                       }}/>*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <input type="email" value={editFormData.email} className={"common-input"}*/}
-                {/*                       onChange={(e) => {*/}
-                {/*                           setEditFormData({*/}
-                {/*                               ...editFormData,*/}
-                {/*                               email: e.target.value*/}
-                {/*                           })*/}
-                {/*                       }}/>*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <Select*/}
-                {/*                    isSearchable*/}
-                {/*                    options={organizations}*/}
-                {/*                    value={{*/}
-                {/*                        value: editFormData.organization.value,*/}
-                {/*                        label: editFormData.organization.label*/}
-                {/*                    }}*/}
-                {/*                    onChange={(selectedOption: any) => {*/}
-                {/*                        setEditFormData({*/}
-                {/*                            ...editFormData,*/}
-                {/*                            organization: {value: selectedOption.value, label: selectedOption.label}*/}
-                {/*                        })*/}
-                {/*                    }}*/}
-                {/*                />*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <Select*/}
-                {/*                    isSearchable*/}
-                {/*                    options={positions}*/}
-                {/*                    value={{value: editFormData.position, label: editFormData.position.label}}*/}
-                {/*                    onChange={(selectedOption: any) => {*/}
-                {/*                        setEditFormData({*/}
-                {/*                            ...editFormData,*/}
-                {/*                            position: {value: selectedOption.value, label: selectedOption.label}*/}
-                {/*                        })*/}
-                {/*                    }}*/}
-                {/*                />*/}
-                {/*            </div>*/}
-                {/*        </div>*/}
-                {/*        <label className={classes.addEmployee__form__photo}>*/}
-                {/*            {*/}
-                {/*                editFormData.photoLink !== "НЕТ" ?*/}
-                {/*                    <div className={classes.editEmployee__photo__wrap}>*/}
-                {/*                        <img src={rootURL + editFormData.photoLink.slice(1)} className={classes.editEmployee__photo} alt="photo"/>*/}
-                {/*                        <div className={classes.editEmployee__photo__icons}>*/}
-                {/*                            <img src={EditIcon} alt="Edit" className={classes.editEmployee__photo__icon}/>*/}
-                {/*                            <a onClick={() => {download(rootURL + editFormData.photoLink.slice(1))}}>*/}
-                {/*                                <img src={DownloadIcon} alt="DownloadIcon" className={classes.editEmployee__photo__icon}/>*/}
-                {/*                            </a>*/}
-                {/*                        </div>*/}
-                {/*                    </div>*/}
-                {/*                    :*/}
-                {/*                    <>*/}
-                {/*                        <span className={classes.addEmployee__form__photo__text}> {form.$('photo').label}</span>*/}
-                {/*                        <input type={"file"} onChange={imageChange}/>*/}
-                {/*                        {*/}
-                {/*                            selectedImage?*/}
-                {/*                                <img src={URL.createObjectURL(selectedImage)}*/}
-                {/*                                     className={classes.addEmployee__form__loaded}/> :*/}
-                {/*                                <img src={Upload} alt="Upload" className={classes.addEmployee__form__icon}/>*/}
-                {/*                        }*/}
-                {/*                    </>*/}
+                <Modal
+                    isOpen={modalIsOpen}
+                    onAfterOpen={afterOpenModal}
+                    onRequestClose={closeModal}
+                    style={customStyles}
+                >
+                    <Title text={"О сотруднике"}/>
+                    <button className={classes.closeModal} onClick={closeModal}>X</button>
+                    <form className={classes.form}>
+                        <div className={classes.editEmployee__form__inputs}>
+                            <div>
+                                <span>Имя:</span>
+                                <span><b>{editFormData.name}</b></span>
+                            </div>
+                            <div>
+                                <span>Полное Имя:</span>
+                                <span><b>{editFormData.fullName}</b></span>
+                            </div>
+                            <div>
+                                <span>Дата рождения:</span>
+                                <span><b>{editFormData.date?.toString()}</b></span>
+                            </div>
+                            <div>
+                                <span>Email:</span>
+                                <span><b>{editFormData.email}</b></span>
+                            </div>
+                            <div>
+                                <span>Организация:</span>
+                                <span><b>{editFormData.organization.label}</b></span>
+                            </div>
+                            <div>
+                                <span>Должность:</span>
+                                <span><b>{editFormData.position.label}</b></span>
+                            </div>
+                        {/*    <div>*/}
+                        {/*        <input type="text" value={editFormData.name} className={"common-input"}*/}
+                        {/*               onChange={(e) => {*/}
+                        {/*                   setEditFormData({*/}
+                        {/*                       ...editFormData,*/}
+                        {/*                       name: e.target.value*/}
+                        {/*                   })*/}
+                        {/*               }}/>*/}
+                        {/*    </div>*/}
+                        {/*    <div>*/}
+                        {/*        <input type="text" value={editFormData.fullName} className={"common-input"}*/}
+                        {/*               onChange={(e) => {*/}
+                        {/*                   setEditFormData({*/}
+                        {/*                       ...editFormData,*/}
+                        {/*                       fullName: e.target.value*/}
+                        {/*                   })*/}
+                        {/*               }}/>*/}
+                        {/*    </div>*/}
+                        {/*    <div>*/}
+                        {/*        <input type="date" value={editFormData.date?.toString()} className={"common-input"}*/}
+                        {/*               onChange={(e) => {*/}
+                        {/*                   setEditFormData({*/}
+                        {/*                       ...editFormData,*/}
+                        {/*                       date: e.target.value*/}
+                        {/*                   })*/}
+                        {/*               }}/>*/}
+                        {/*    </div>*/}
+                        {/*    <div>*/}
+                        {/*        <input type="email" value={editFormData.email} className={"common-input"}*/}
+                        {/*               onChange={(e) => {*/}
+                        {/*                   setEditFormData({*/}
+                        {/*                       ...editFormData,*/}
+                        {/*                       email: e.target.value*/}
+                        {/*                   })*/}
+                        {/*               }}/>*/}
+                        {/*    </div>*/}
+                        {/*    <div>*/}
+                        {/*        <Select*/}
+                        {/*            isSearchable*/}
+                        {/*            options={organizations}*/}
+                        {/*            value={{*/}
+                        {/*                value: editFormData.organization.value,*/}
+                        {/*                label: editFormData.organization.label*/}
+                        {/*            }}*/}
+                        {/*            onChange={(selectedOption: any) => {*/}
+                        {/*                setEditFormData({*/}
+                        {/*                    ...editFormData,*/}
+                        {/*                    organization: {value: selectedOption.value, label: selectedOption.label}*/}
+                        {/*                })*/}
+                        {/*            }}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
+                        {/*    <div>*/}
+                        {/*        <Select*/}
+                        {/*            isSearchable*/}
+                        {/*            options={positions}*/}
+                        {/*            value={{value: editFormData.position, label: editFormData.position.label}}*/}
+                        {/*            onChange={(selectedOption: any) => {*/}
+                        {/*                setEditFormData({*/}
+                        {/*                    ...editFormData,*/}
+                        {/*                    position: {value: selectedOption.value, label: selectedOption.label}*/}
+                        {/*                })*/}
+                        {/*            }}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
+                        </div>
+                        <label className={classes.addEmployee__form__photo}>
+                            {
+                                editFormData.photoLink !== "НЕТ" ?
+                                    <div className={classes.editEmployee__photo__wrap} onClick={() => {download(rootURL + editFormData.photoLink.slice(1))}}>
+                                        <img src={rootURL + editFormData.photoLink.slice(1)} className={classes.editEmployee__photo} alt="photo"/>
+                                        <div className={classes.editEmployee__photo__icons}>
+                                            {/*<img src={EditIcon} alt="Edit" className={classes.editEmployee__photo__icon}/>*/}
+                                            {/*<a onClick={() => {download(rootURL + editFormData.photoLink.slice(1))}}>*/}
+                                                <img src={DownloadIcon} alt="DownloadIcon" className={classes.editEmployee__photo__icon}/>
+                                            {/*</a>*/}
+                                        </div>
+                                    </div>
+                                    :
+                                    <>
+                                        Фото нет
+                                        {/*<span className={classes.addEmployee__form__photo__text}> {form.$('photo').label}</span>*/}
+                                        {/*<input type={"file"} onChange={imageChange}/>*/}
+                                        {/*{*/}
+                                        {/*    selectedImage?*/}
+                                        {/*        <img src={URL.createObjectURL(selectedImage)}*/}
+                                        {/*             className={classes.addEmployee__form__loaded}/> :*/}
+                                        {/*        <img src={Upload} alt="Upload" className={classes.addEmployee__form__icon}/>*/}
+                                        {/*}*/}
+                                    </>
 
-                {/*            }*/}
-                {/*            <p className={"common-error"}>{form.$('photo').error}</p>*/}
-                {/*        </label>*/}
-                {/*    </form>*/}
-                {/*    <button className={"common-btn"} onClick={() => {*/}
-                {/*        try {*/}
-                {/*            console.log(selectedImage)*/}
-                {/*            usersAPI.editEmployee(*/}
-                {/*                rowId,*/}
-                {/*                editFormData.name,*/}
-                {/*                editFormData.fullName,*/}
-                {/*                editFormData.date,*/}
-                {/*                editFormData.email,*/}
-                {/*                editFormData.organization.value,*/}
-                {/*                editFormData.position.value,*/}
-                {/*                selectedImage*/}
-                {/*            ).then(response => {*/}
-                {/*                if ("error" !== response.data) {*/}
-                {/*                    Swal.fire('Success', 'Данные успешно обновлены', 'success')*/}
-                {/*                    closeModal()*/}
-                {/*                } else {*/}
-                {/*                    Swal.fire('Ошибка', 'Что-то пошло не так', 'error')*/}
-                {/*                }*/}
-                {/*            })*/}
-                {/*        } catch (e) {*/}
-                {/*            Swal.fire('Ошибка', String(e), 'error')*/}
-                {/*        }*/}
-                {/*    }*/}
-                {/*    }>Сохранить*/}
-                {/*    </button>*/}
-                {/*</Modal>*/}
+                            }
+                            <p className={"common-error"}>{form.$('photo').error}</p>
+                        </label>
+                    </form>
+                    {/*<button className={"common-btn"} onClick={() => {*/}
+                    {/*    try {*/}
+                    {/*        console.log(selectedImage)*/}
+                    {/*        usersAPI.editEmployee(*/}
+                    {/*            rowId,*/}
+                    {/*            editFormData.name,*/}
+                    {/*            editFormData.fullName,*/}
+                    {/*            editFormData.date,*/}
+                    {/*            editFormData.email,*/}
+                    {/*            editFormData.organization.value,*/}
+                    {/*            editFormData.position.value,*/}
+                    {/*            selectedImage*/}
+                    {/*        ).then(response => {*/}
+                    {/*            if ("error" !== response.data) {*/}
+                    {/*                Swal.fire('Success', 'Данные успешно обновлены', 'success')*/}
+                    {/*                closeModal()*/}
+                    {/*            } else {*/}
+                    {/*                Swal.fire('Ошибка', 'Что-то пошло не так', 'error')*/}
+                    {/*            }*/}
+                    {/*        })*/}
+                    {/*    } catch (e) {*/}
+                    {/*        Swal.fire('Ошибка', String(e), 'error')*/}
+                    {/*    }*/}
+                    {/*}*/}
+                    {/*}>Сохранить*/}
+                    {/*</button>*/}
+                </Modal>
                 {isOpen && <AddEmployeeForm form={form} organizations={organizations} positions={positions}/>}
                 <div className={classes.table}>
                     <MUIDataTable

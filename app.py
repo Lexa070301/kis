@@ -116,7 +116,7 @@ def employees():
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", NULL, "' + email + '", "' + password + '", "' + position + '", "' + organization + '");')
+            'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", "НЕТ", "' + email + '", "' + password + '", "' + position + '", "' + organization + '");')
         cursor.execute('SELECT LAST_INSERT_ID() AS lastId;')
         r = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
         last_id = (r[0] if r else None) if False else r
@@ -145,6 +145,7 @@ def employees():
                     'UPDATE Employee SET PhotoLink = "' + image_path + '" WHERE id = ' + employeeId + ';')
                 cursor.close()
                 conn.commit()
+
 
     return request.method
 
