@@ -23,6 +23,15 @@
     flex: 1;
 }
 
+.editEmployee__form__inputs {
+    width: 50%;
+    flex: 1;
+}
+
+.editEmployee__form__inputs > div {
+    margin-bottom: 10px;
+}
+
 .addEmployee__form__photo {
     cursor: pointer;
     width: 50%;
@@ -39,13 +48,12 @@
     border-radius: 5px;
     transition: 0.3s ease all;
     background-color: white;
-    box-shadow:
-            2.8px 1.1px 2.2px rgba(0, 0, 0, 0.016),
-            6.7px 2.7px 5.3px rgba(0, 0, 0, 0.022),
-            12.5px 5px 10px rgba(0, 0, 0, 0.025),
-            22.3px 8.9px 17.9px rgba(0, 0, 0, 0.03),
-            41.8px 16.7px 33.4px rgba(0, 0, 0, 0.039),
-            100px 40px 80px rgba(0, 0, 0, 0.07);
+    box-shadow: 2.8px 1.1px 2.2px rgba(0, 0, 0, 0.016),
+    6.7px 2.7px 5.3px rgba(0, 0, 0, 0.022),
+    12.5px 5px 10px rgba(0, 0, 0, 0.025),
+    22.3px 8.9px 17.9px rgba(0, 0, 0, 0.03),
+    41.8px 16.7px 33.4px rgba(0, 0, 0, 0.039),
+    100px 40px 80px rgba(0, 0, 0, 0.07);
     margin-left: 30px;
 }
 
@@ -53,7 +61,7 @@
     display: none;
 }
 
-.addEmployee__form__icon{
+.addEmployee__form__icon {
     transition: 0.3s ease all;
 }
 
@@ -77,4 +85,55 @@
     height: 25px;
     cursor: pointer;
     margin-right: 15px;
+}
+
+.closeModal {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    cursor: pointer;
+    background: none;
+    outline: none !important;
+    border: none;
+    font-size: 20px;
+}
+
+.editEmployee__photo {
+    height: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    transition: 0.3s ease all;
+}
+
+.editEmployee__photo__wrap {
+    position: relative;
+    height: 100%;
+}
+
+.editEmployee__photo__wrap:hover .editEmployee__photo__icons{
+    opacity: 1;
+    visibility: visible;
+}
+
+.editEmployee__photo__wrap:hover .editEmployee__photo{
+    filter: brightness(50%);
+}
+
+.editEmployee__photo__icons {
+    position: absolute;
+    height: 100%;
+    transition: 0.3s ease all;
+    display: flex;
+    justify-content: center;
+    top: 0;
+    width: 100%;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.editEmployee__photo__icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 15px;
 }

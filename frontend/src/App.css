@@ -80,3 +80,8 @@ div[class$="control"][class^=" css"] {
 div[id^="react-select"][class$="menu"] {
     z-index: 1000!important;
 }
+
+
+.ReactModal__Overlay  {
+    z-index: 10000;
+}

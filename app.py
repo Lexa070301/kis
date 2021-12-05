@@ -97,7 +97,7 @@ def agents():
 def employees():
     if request.method == 'GET':
         response = app.response_class(
-            response=query_db('SELECT Employee.id, Name, FullName, DateOfBirth, Email, Organisation.Title AS Office, Position.Title AS Position FROM Employee \
+            response=query_db('SELECT Employee.id, Name, FullName, DateOfBirth, Email, Organisation.Title AS Office, Position.Title AS Position, PhotoLink as PhotoLink FROM Employee \
             INNER JOIN Position ON Employee.Position_id = Position.id \
             INNER JOIN Organisation ON Employee.Organisation_id = Organisation.id;'),
             status=200,
@@ -117,10 +117,14 @@ def employees():
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO Employee (id, Name, FullName, DateOfBirth, PhotoLink, Email, Password, Position_id, Organisation_id) VALUES (NULL, "' + name + '","' + fullname + '","' + date_of_birth + '", NULL, "' + email + '", "' + password + '", "' + position + '", "' + organization + '");')
+        cursor.execute('SELECT LAST_INSERT_ID() AS lastId;')
+        r = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
+        last_id = (r[0] if r else None) if False else r
+        last_id = json.dumps(last_id, ensure_ascii=False, default=str)
         cursor.close()
         conn.commit()
         response = app.response_class(
-            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            response=last_id,
             status=200,
             mimetype='application/json'
         )
@@ -147,26 +151,26 @@ def employees():
 
 @app.route(default_path + 'employee', methods=['PUT', 'DELETE'])
 def employee():
-    if request.method == 'PUT':
-        id = str(request.json["id"])
-        name = str(request.json["name"])
-        fullname = str(request.json["fullName"])
-        email = str(request.json["email"])
-        organization = str(request.json["organization"])
-        position = str(request.json["position"])
-        date_of_birth = str(request.json["dateOfBirth"])
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute(
-            'UPDATE Employee SET Name = "' + name + '", FullName = "' + fullname + '", DateOfBirth = "' + date_of_birth + '", Email = "' + email + '", Position_id = "' + position + '", Organisation_id = "' + organization + '" WHERE id = "' + id + '";')
-        cursor.close()
-        conn.commit()
-        response = app.response_class(
-            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
-            status=200,
-            mimetype='application/json'
-        )
-        return response
+    # if request.method == 'PUT':
+    #     id = str(request.json["id"])
+    #     name = str(request.json["name"])
+    #     fullname = str(request.json["fullName"])
+    #     email = str(request.json["email"])
+    #     organization = str(request.json["organization"])
+    #     position = str(request.json["position"])
+    #     date_of_birth = str(request.json["dateOfBirth"])
+    #     conn = mysql.connect()
+    #     cursor = conn.cursor()
+    #     cursor.execute(
+    #         'UPDATE Employee SET Name = "' + name + '", FullName = "' + fullname + '", DateOfBirth = "' + date_of_birth + '", Email = "' + email + '", Position_id = "' + position + '", Organisation_id = "' + organization + '" WHERE id = "' + id + '";')
+    #     cursor.close()
+    #     conn.commit()
+    #     response = app.response_class(
+    #         response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+    #         status=200,
+    #         mimetype='application/json'
+    #     )
+    #     return response
 
     if request.method == 'DELETE':
         id = request.args.get('id')

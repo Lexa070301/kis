@@ -6,6 +6,7 @@ import Contract from "../store/Contract";
 
 // export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
 export const baseURL = "http://127.0.0.1:5000/api/"
+export const rootURL = "http://lexa070301.bhuser.ru/kis"
 
 const instance = axios.create({
     withCredentials: true,
@@ -34,28 +35,40 @@ export const usersAPI = {
         return instance.get(`employees`)
             .then(response => response.data);
     },
-    editEmployee(
-        id: Number,
-        name: String,
-        fullName: String,
-        dateOfBirth: String,
-        email: String,
-        organization: String,
-        position: String,
-    ) {
-        return instance.put(`employee`, {
-            id,
-            name,
-            fullName,
-            dateOfBirth,
-            email,
-            organization,
-            position
-        }).then(response => {
-            EmployeesInstance.loadEmployees()
-            return response.data
-        });
-    },
+    // async editEmployee(
+    //     id: Number,
+    //     name: String,
+    //     fullName: String,
+    //     dateOfBirth: String,
+    //     email: String,
+    //     organization: String,
+    //     position: String,
+    //     photo: File | undefined
+    // ) {
+    //     const response1 = await instance.post(`employee`, {
+    //         id,
+    //         name,
+    //         fullName,
+    //         dateOfBirth,
+    //         email,
+    //         organization,
+    //         position
+    //     })
+    //     if (photo) {
+    //         const data = new FormData();
+    //         data.append('image', photo);
+    //         data.append('id', response1.data[0].lastId);
+    //         await instance.put(`employees`,
+    //             data,
+    //             {
+    //                 headers: {
+    //                     "Content-Type": "multipart/form-data"
+    //                 }
+    //             })
+    //     }
+    //     EmployeesInstance.loadEmployees()
+    //     return response1
+    // },
     deleteEmployee(id: Number) {
         return instance.delete(`employee?id=` + id, {}).then(response => {
             EmployeesInstance.loadEmployees()
@@ -252,3 +265,20 @@ export const documentsAPI = {
         return response
     },
 }
+
+export const download = (url: string) => {
+    axios({
+        url: url,
+        method:'GET',
+        responseType: 'blob'
+    })
+        .then((response) => {
+            const url = window.URL
+                .createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'image.jpg');
+            document.body.appendChild(link);
+            link.click();
+        })
+};
