@@ -5,7 +5,7 @@ import {Title} from "../common/Title/Title";
 import React, {FC, useEffect, useState} from "react";
 import MUIDataTable, {MUIDataTableOptions} from "mui-datatables";
 import Client, {ClientItemType, ClientsType} from "../../store/Clients";
-import Contracts from "../../store/Contract";
+import Contracts, {ContractsType} from "../../store/Contract";
 import {citiesHandlers, form} from "../../store/AddContractForm";
 import {AddContractForm} from "./AddContractForm";
 import Org, {OrganisationItemType, OrganisationsType} from "../../store/Organisations";
@@ -186,7 +186,6 @@ export const Contract = observer((props: any) => {
                     label: "№ " + item.Number + " от " + item.Date
                 }
             })
-
 
         if (Cities.currentCountry !== '') {
             cities = Cities.getCurrentCities()

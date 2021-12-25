@@ -16,7 +16,7 @@ class Notifications {
         makeAutoObservable(this)
     }
 
-    async loadNotifications(position: string) {
+    async loadNotifications(position: string | null) {
         return documentsAPI.getNotifications(position).then(response => this.notifications = response)
     }
 }

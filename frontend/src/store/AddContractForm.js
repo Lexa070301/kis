@@ -246,7 +246,7 @@ const hooks = {
                 hotels,
             ).then(response => {
                 if (response !== "error") {
-                    form.reset()
+                    form.clear()
                     Swal.fire('Success', 'Предварительное соглашение успешно добавлено', 'success')
                 } else {
                     Swal.fire('Ошибка', 'Что-то пошло не так', 'error')

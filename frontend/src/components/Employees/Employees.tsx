@@ -146,7 +146,6 @@ export const Employees = observer(() => {
                             {
                                 <>
                                     <img src={ViewIcon} alt="Edit" className={classes.editEmployee} onClick={() => {
-                                        console.log(tableMeta.rowData[7])
                                         setEditFormData({
                                             name: tableMeta.rowData[0],
                                             fullName: tableMeta.rowData[1],

@@ -1,0 +1,49 @@
+.table {
+    margin-top: 20px;
+}
+
+.addClient__btn {
+    margin-top: 30px;
+}
+
+
+.addClient__form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+
+.addClient__form__inputs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0px 20px;
+}
+
+
+.editClient {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.hotel {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+    gap: 0px 20px;
+}
+
+
+.btns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    margin-bottom: 20px;
+}

@@ -178,7 +178,6 @@ export const PreliminaryAgreement = observer(() => {
             selectableRows: "none",
             print: false
         }
-        console.log(Cities.currentCountry)
         return (
             <div>
                 <Title text={"Предварительные соглашения"}/>

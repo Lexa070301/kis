@@ -280,13 +280,16 @@ def notifications():
     position = request.args.get('position')
     response = ""
     if position == "Администратор" or position == "Менеджер":
-        query = query_db('SELECT PreliminaryAgreement.id as Id, "Contract" as Type, CONCAT("Соглашение № ",PreliminaryAgreement.Number, " от ", PreliminaryAgreement.Date) as Text FROM Contract INNER JOIN PreliminaryAgreement ON \
+        query = query_db('SELECT PreliminaryAgreement.id as Id, "Contract" as Type,\
+         CONCAT("Соглашение № ",PreliminaryAgreement.Number, " от ", PreliminaryAgreement.Date) as Text\
+          FROM Contract INNER JOIN PreliminaryAgreement ON \
             Contract.PreliminaryAgreement_id = PreliminaryAgreement.id WHERE Contract.Status = "open";')
         response = app.response_class(
             response=query,
             status=200,
             mimetype='application/json'
         )
+        print(query)
     return response
 
 
@@ -436,7 +439,8 @@ def contracts():
                               'Organisation.id AS OrganizationId '
                               'FROM Contract '
                               'LEFT JOIN Employee ON Contract.Employee_id = Employee.id '
-                              'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              # 'LEFT JOIN Organisation ON Employee.Organisation_id = Organisation.id '
+                              'INNER JOIN Organisation ON Contract.Organisation_id = Organisation.id '
                               'INNER JOIN PreliminaryAgreement ON Contract.PreliminaryAgreement_id = PreliminaryAgreement.id '
                               'INNER JOIN User ON PreliminaryAgreement.User_id = User.id;'),
             status=200,
@@ -467,7 +471,7 @@ def contracts():
                        '", EndDate = "' + end_date + '", Sum = "' + sum + '", Status = "' + status +
                        '", MembersCount = "' + members_count + '", Organisation_id = "' + organization +
                        '", Employee_id = ' + employee + ' WHERE PreliminaryAgreement_id = "' + preliminary_agreement + '";')
-        cursor.execute('UPDATE PreliminaryAgreement SET User_id = "' + client + '" WHERE id = "' + preliminary_agreement + '";')
+        cursor.execute('UPDATE PreliminaryAgreement SET User_id = "' + client + '", status = "active" WHERE id = "' + preliminary_agreement + '";')
         cursor.execute('SELECT id FROM Contract WHERE PreliminaryAgreement_id = "' + preliminary_agreement + '"')
         contract_id = str(cursor.fetchall()[0][0])
 
@@ -494,6 +498,29 @@ def contracts():
         )
         return response
 
+
+
+@app.route(default_path + 'payments', methods=['GET', 'POST'])
+def payments():
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT Payment.Date AS Date, '
+                              'Payment.id AS Id, '
+                              'Payment.Number AS Number, '
+                              'Payment.Status AS Status, '
+                              'Payment.Amount AS Sum, '
+                              'Contract.Number AS Contract, '
+                              'Contract.id AS ContractId, '
+                              'Contract.Date AS ContractDate, '
+                              'Organisation.Title AS Organization, '
+                              'Organisation.id AS OrganizationId '
+                              'FROM Payment '
+                              'INNER JOIN Organisation ON Payment.Organisation_id = Organisation.id '
+                              'INNER JOIN Contract ON Payment.Contract_id = Contract.id;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
 if __name__ == '__main__':
     app.run()

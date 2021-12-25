@@ -56,7 +56,9 @@ class Contracts {
     }
 
     loadContracts() {
-        return documentsAPI.getContracts().then(response => this.contracts = response)
+        return documentsAPI.getContracts().then(response => {
+            this.contracts = response
+        })
     }
 
     setCurrentContract(preliminaryAgreementId: number) {

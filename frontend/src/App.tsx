@@ -24,6 +24,7 @@ import {PreliminaryAgreement} from "./components/PreliminaryAgreement/Preliminar
 import {Contract} from "./components/Contract/Contract";
 import "react-toastify/dist/ReactToastify.css"
 import {Notifications} from "./components/Notifications/Notifications";
+import {Payment} from "./components/Payment/Payment";
 
 
 const App = observer(() => {
@@ -79,7 +80,11 @@ const App = observer(() => {
         <Route path="/clients">
             <Clients/>
         </Route>
+        <Route path="/payments">
+            <Payment/>
+        </Route>
     </>
+
     const agentRoutes = <>
         <Route path="/for-agent">
             <ForAgent/>
@@ -88,6 +93,7 @@ const App = observer(() => {
             <PreliminaryAgreement/>
         </Route>
     </>
+
     const adminRoutes = <>
         <Route path="/for-admin">
             <ForAdmin/>
@@ -131,7 +137,11 @@ const App = observer(() => {
         <Route path="/contracts">
             <Contract/>
         </Route>
+        <Route path="/payments">
+            <Payment/>
+        </Route>
     </>
+
     return (
         <Router>
             <AsideMenu/>

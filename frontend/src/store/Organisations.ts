@@ -2,8 +2,8 @@ import {makeAutoObservable} from "mobx";
 import {usersAPI} from "../api/api";
 
 export type OrganisationItemType = {
-    id: number
-    Title: string
+    id: number | null
+    Title: string | null
 }
 
 export type OrganisationsType = Array<OrganisationItemType> | null
