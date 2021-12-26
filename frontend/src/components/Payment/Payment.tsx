@@ -150,7 +150,7 @@ export const Payment = observer((props: any) => {
 
         return (
             <div>
-                <Title text={"Договоры"}/>
+                <Title text={"Оплаты"}/>
                 <div className={classes.table}>
                     {isOpen && <AddPaymentForm
                         form={form}

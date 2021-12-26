@@ -7,7 +7,7 @@ export const ForAccountant = () => {
                             {text: "Валюты", link: "/currencies"},
                             {text: "Курсы валют", link: "/currency-rates"},
                         ]}/>
-            <ColumnMenu title={"Клиентский договора"}
+            <ColumnMenu title={"Клиентские договора"}
                         items={[
                             {text: "Клиентский договора", link: "/contracts"},
                             {text: "Оплаты", link: "/payments"},

@@ -289,6 +289,17 @@ def notifications():
             status=200,
             mimetype='application/json'
         )
+
+    if position == "Администратор" or position == "Бухгалтер":
+        query = query_db('SELECT Contract.id as Id, "Payment" as Type,\
+              CONCAT("Контракт № ",Contract.Number, " от ", Contract.Date) as Text\
+               FROM Payment INNER JOIN Contract ON \
+                 Payment.Contract_id = Contract.id WHERE Payment.Status = "open";')
+        response = app.response_class(
+            response=query,
+            status=200,
+            mimetype='application/json'
+        )
         print(query)
     return response
 
@@ -474,6 +485,9 @@ def contracts():
         cursor.execute('UPDATE PreliminaryAgreement SET User_id = "' + client + '", status = "active" WHERE id = "' + preliminary_agreement + '";')
         cursor.execute('SELECT id FROM Contract WHERE PreliminaryAgreement_id = "' + preliminary_agreement + '"')
         contract_id = str(cursor.fetchall()[0][0])
+        cursor.execute(
+            'INSERT INTO `Payment` (`id`, `Number`, `Date`, `Amount`, `isPaid`, `Status`, `Organisation_id`, `Employee_id`, `Contract_id`) \
+            VALUES (NULL, NULL, NULL, "' + sum + '", "' + 0 + '", "open", "' + organization + '", NULL, "' + contract_id + '");')
 
         i = 0
         for item in members:
