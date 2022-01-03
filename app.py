@@ -1,13 +1,13 @@
 import os
 from ast import literal_eval
-
+import requests
 from flask import Flask, request
 from flask_cors import CORS
 from flaskext.mysql import MySQL
 import json
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, verify_jwt_in_request
 from datetime import timedelta
-
+from xml.etree.ElementTree import XML, fromstring
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './static/images/'
@@ -487,7 +487,7 @@ def contracts():
         contract_id = str(cursor.fetchall()[0][0])
         cursor.execute(
             'INSERT INTO `Payment` (`id`, `Number`, `Date`, `Amount`, `isPaid`, `Status`, `Organisation_id`, `Employee_id`, `Contract_id`) \
-            VALUES (NULL, NULL, NULL, "' + sum + '", "' + 0 + '", "open", "' + organization + '", NULL, "' + contract_id + '");')
+            VALUES (NULL, NULL, NULL, "' + sum + '", "0", "open", "' + organization + '", NULL, "' + contract_id + '");')
 
         i = 0
         for item in members:
@@ -534,7 +534,65 @@ def payments():
             status=200,
             mimetype='application/json'
         )
+
         return response
 
+    if request.method == 'POST':
+        date = str(request.json["Date"])
+        number = str(request.json["Number"])
+        contract_id = str(request.json["Contract_id"])
+        sum = str(request.json["Sum"])
+
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE Payment SET Date = "' + date + '", Number = "' + number + '", Amount = "' + sum + '", \
+            Status = "closed", IsPaid = "1" WHERE Contract_id = "' + contract_id + '";')
+        cursor.execute('UPDATE Contract SET status = "closed" WHERE id = "' + contract_id + '";')
+        cursor.close()
+        conn.commit()
+        response = app.response_class(
+            response=query_db('SELECT LAST_INSERT_ID() AS lastId;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+
+@app.route(default_path + 'loadCurrencies', methods=['GET'])
+def loadCurrencies():
+    date = request.args.get('date')
+    r = requests.get('http://www.cbr.ru/scripts/XML_daily.asp?date_req=' + date)
+    myxml = fromstring(r.text)
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        'DELETE FROM `Currency`')
+    for child in myxml:
+        code = child[0].text
+        name = child[3].text
+        value = child[4].text
+        print(code, name, value)
+        cursor.execute('INSERT INTO `Currency` (`id`, `CurrencyName`, `Code`, `Value`) VALUES (NULL, "' + name + '", "' + code + '", "' + value + '")')
+
+    cursor.close()
+    conn.commit()
+    response = app.response_class(
+        response='0',
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route(default_path + 'currencies', methods=['GET'])
+def currencies():
+    if request.method == 'GET':
+        response = app.response_class(
+            response=query_db('SELECT * FROM Currency;'),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 if __name__ == '__main__':
     app.run()

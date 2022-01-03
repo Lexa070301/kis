@@ -23,7 +23,7 @@ import Hotels, {HotelItemType, HotelsType} from "../../store/Hotels";
 export const Contract = observer((props: any) => {
 
     const [render, setRender] = useState(false)
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(true)
 
     useEffect(() => {
         async function init() {

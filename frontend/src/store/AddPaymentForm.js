@@ -5,6 +5,8 @@ import Swal from 'sweetalert2'
 import Agents from "./Agents";
 import Payments from "./Payments";
 import {toJS} from "mobx";
+import payments from "./Payments";
+import {documentsAPI} from "../api/api";
 
 
 const plugins = {
@@ -29,7 +31,13 @@ const organizationHandlers = {
     },
 }
 
-
+const contractHandlers = {
+    onChange: (field) => (e) => {
+        field.set(e);
+        Payments.setCurrentPayment(e.value)
+        form.$('sum').set(Payments.currentPayment.Sum)
+    },
+}
 
 const fields = [{
     name: 'number',
@@ -54,6 +62,7 @@ const fields = [{
     name: 'contract',
     label: 'Договор',
     rules: 'required',
+    handlers: contractHandlers,
     placeholder: 'Выберите договор',
     output: contract => contract && contract.value
 }, {
@@ -68,7 +77,19 @@ const fields = [{
 const hooks = {
     onSuccess(form) {
         try {
-
+            documentsAPI.addPayment(
+              form.values().date,
+              form.values().number,
+              form.values().contract,
+              form.values().sum,
+            ).then(response => {
+                if (response !== "error") {
+                    form.clear()
+                    Swal.fire('Success', 'Оплата успешно проведена', 'success')
+                } else {
+                    Swal.fire('Ошибка', 'Что-то пошло не так', 'error')
+                }
+            })
         } catch (e) {
             Swal.fire('Ошибка', String(e), 'error')
         }

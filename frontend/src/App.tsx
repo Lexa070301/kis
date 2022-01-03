@@ -25,6 +25,7 @@ import {Contract} from "./components/Contract/Contract";
 import "react-toastify/dist/ReactToastify.css"
 import {Notifications} from "./components/Notifications/Notifications";
 import {Payment} from "./components/Payment/Payment";
+import Currencies from "./components/Currencies/Currencies";
 
 
 const App = observer(() => {
@@ -83,6 +84,9 @@ const App = observer(() => {
         <Route path="/payments">
             <Payment/>
         </Route>
+        <Route path="/currencies">
+            <Currencies/>
+        </Route>
     </>
 
     const agentRoutes = <>
@@ -139,6 +143,9 @@ const App = observer(() => {
         </Route>
         <Route path="/payments">
             <Payment/>
+        </Route>
+        <Route path="/currencies">
+            <Currencies/>
         </Route>
     </>
 

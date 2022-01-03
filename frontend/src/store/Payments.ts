@@ -47,7 +47,7 @@ class Payments {
         return documentsAPI.getPayments().then(response => this.payments = response)
     }
 
-    setCurrentOrganization(id:number, Title: string) {
+    setCurrentOrganization(id: number, Title: string) {
         this.currentOrganization = {
             id,
             Title
@@ -55,11 +55,7 @@ class Payments {
     }
 
     setCurrentPayment(contractId: number) {
-        if (contractId) {
-            return hotelsAPI.getCitiesToVisit(contractId).then(response => {
-                this.currentPayment = this.payments?.filter((item) => item.ContractId === contractId)[0]
-            })
-        }
+        this.currentPayment = this.payments?.filter((item) => item.ContractId === contractId)[0]
     }
 }
 

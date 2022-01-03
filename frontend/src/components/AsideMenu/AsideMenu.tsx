@@ -50,7 +50,7 @@ export const AsideMenu = observer(() => {
     </>
     return (
         <div className={classes.AsideMenu}>
-            <ToastContainer/>
+            {/*<ToastContainer/>*/}
             <NavLink to={"/"} exact className={classes.link} activeClassName={classes.active}>
                 Главная
             </NavLink>

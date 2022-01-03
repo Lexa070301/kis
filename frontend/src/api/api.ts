@@ -5,6 +5,8 @@ import PreliminaryAgreement from "../store/PreliminaryAgreement";
 import Contract from "../store/Contract";
 import Notifications from "../store/Notifications";
 import {UserInstance} from "../store/User";
+import Payments from "../store/Payments";
+import Currency from "../store/Currencies";
 
 // export const baseURL = "http://lexa070301.bhuser.ru/kis/api/"
 export const baseURL = "http://127.0.0.1:5000/api/"
@@ -192,6 +194,16 @@ export const clientsAPI = {
 }
 
 export const documentsAPI = {
+    loadCurrencies(date: string) {
+      return instance.get(`loadCurrencies?date=` + date)
+          .then(() => {
+              Currency.loadCurrencies()
+          });
+    },
+    getCurrencies() {
+        return instance.get('currencies')
+            .then(response => response.data);
+    },
     getPreliminaryAgreements() {
         return instance.get(`preliminaryAgreements`)
             .then(response => {
@@ -205,6 +217,23 @@ export const documentsAPI = {
     getPayments() {
         return instance.get(`payments`)
             .then(response => response.data);
+    },
+    async addPayment(
+        Date: String,
+        Number: Number,
+        Contract_id: Number,
+        Sum: Number,
+    ) {
+        const response = await instance.post(`payments`, {
+            Date,
+            Number,
+            Contract_id,
+            Sum,
+        })
+        Contract.loadContracts()
+        Payments.loadPayments()
+        Notifications.loadNotifications(UserInstance.position)
+        return response
     },
     getNotifications(position: string | null) {
         return instance.get(`notifications?position=` + position)
