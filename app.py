@@ -193,6 +193,7 @@ def login():
         data = cursor.fetchone()
         password = data[0]
         userid = str(data[1])
+        cursor.execute("INSERT INTO ActivityTriggerTable (`id`, `User_id`) VALUES (NULL, '6')")
         cursor.close()
         if password == request.json['password']:
             token = create_access_token(identity=userid, expires_delta=timedelta(24))
